@@ -1,7 +1,7 @@
 # Cloudformation Custom Resources Helper
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
-##How to Use
+## How to Use
 ```javascript
 const cfnCR = require("cfn-custom-resource");
 ```
@@ -11,6 +11,6 @@ const cfnCR = require("cfn-custom-resource");
 * sendFailure - sends a failed response to CloudFormation, wraps sendResponse
 * sendResponse - core function for sending a responses to CloudFormation
 
-##Constants
+## Constants
 * Responses - SUCCESS and FAILED
 * Request Types - CREATE, UPDATE, DELETE
