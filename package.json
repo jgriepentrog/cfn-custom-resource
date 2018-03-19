@@ -1,0 +1,19 @@
+{
+  "name": "cfn-custom-resource",
+  "version": "1.0.0",
+  "description": "Node.js module providing utility functions for AWS Cloudformation Custom Resources. Target runtime is Lambda Node 6.",
+  "main": "index.js",
+  "repository": "git@github.com:zippadd/cfn-custom-resource.git",
+  "author": "ZipPadd",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "eslint": "^4.19.0",
+    "jest": "^22.4.2"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest --coverage",
+    "validate": "yarn lint && yarn jest"
+  }
+}
