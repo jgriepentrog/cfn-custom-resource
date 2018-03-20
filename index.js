@@ -35,6 +35,11 @@ const sendResponse = (responseDetails, event, callback) => {
       });
   }
 
+  /* Cloudformation requires an object, so wrap if it's not */
+  if (responseDetails.Data && typeof responseDetails.Data !== "object") {
+    responseDetails.Data = {data: responseDetails.Data};
+  }
+
   const {Status, Reason, PhysicalResourceId, Data} = responseDetails;
 
   const responseBody = {
@@ -43,12 +48,16 @@ const sendResponse = (responseDetails, event, callback) => {
     PhysicalResourceId,
     StackId: event.StackId,
     RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId,
-    Data: Data ? Data : {}
+    LogicalResourceId: event.LogicalResourceId
+    /* ...Data ? {Data} : {}, - reinstate once Node 8 is supported in Lambda */
   };
 
   if (Reason) {
     responseBody.Reason = Reason;
+  }
+
+  if (Data) {
+    responseBody.Data = Data;
   }
 
   const responseBodyStr = JSON.stringify(responseBody); // Put back inline once Node 8
@@ -95,6 +104,10 @@ const sendResponse = (responseDetails, event, callback) => {
         return callback(Reason);
       }
 
+      if (Data) {
+        return callback(null, Data);
+      }
+
       return callback(null);
     })
     .catch((err) => {
@@ -103,24 +116,26 @@ const sendResponse = (responseDetails, event, callback) => {
 };
 
 /**
- * [sendSuccess description]
- * @param  {[type]}   physicalResourceId [description]
- * @param  {[type]}   data               [description]
- * @param  {[type]}   event              [description]
- * @param  {Function} callback           [description]
- * @return {[type]}                      [description]
+ * Sends a success response to Cloudformation. Wraps sendResponse.
+ * @param  {string}   physicalResourceId  Physical Resource Id of the resource
+ * @param  {*}        data                Optional. Additional data to send. If not
+ *                                        an object, it is wrapped in one with a
+ *                                        single property, data, assigned to it.
+ * @param  {Object}   event               Lambda event
+ * @param  {Function} callback            Lambda callback
+ * @return {Promise}                      Promise for sending the response
  */
 const sendSuccess = (physicalResourceId, data, event, callback) => {
   return sendResponse({Status: SUCCESS, Reason: "", physicalResourceId, data}, event, callback);
 };
 
 /**
- * [sendFailure description]
- * @param  {[type]}   reason   [description]
- * @param  {[type]}   event    [description]
- * @param  {Function} callback [description]
- * @param  {[type]}   context  [description]
- * @return {[type]}            [description]
+ * Sends a failed response to Cloudformation. Wraps sendResponse.
+ * @param  {string}   reason    Reason for the failure. If not provided, a default is provided.
+ * @param  {Object}   event     Lambda event
+ * @param  {Function} callback  Lambda callback
+ * @param  {Object}   context   Lambda context. Used for providing a useful default reason.
+ * @return {Promise}             Promise for sending the resposne
  */
 const sendFailure = (reason, event, callback, context) => {
   const defaultReason = context ?

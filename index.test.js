@@ -46,6 +46,10 @@ const successRespDetails = {
 const successRespDetailsWithData = Object.assign({}, successRespDetails);
 successRespDetailsWithData.Data = {test: "I'm some data"};
 
+const successRespDetailsWithStrData = Object.assign({}, successRespDetails);
+successRespDetailsWithStrData.Data = "I'm some data";
+const strData = successRespDetailsWithStrData.Data.slice(0);
+
 /* Failed response setup */
 const failedRespDetailsNoReason = {
   Status: FAILED,
@@ -85,9 +89,16 @@ test("Gets a resolved Promise with null passed to callback when it is a proper s
   return expect(sendResponse(successRespDetails, fakeEvent, fakeCallback)).resolves.toEqual({error: null});
 });
 
-test("Gets a resolved Promise with null passed to callback when it is a proper success response", () => {
+test("Gets a resolved Promise with null passed to callback when it is a proper success response with data", () => {
   expect.assertions(1);
-  return expect(sendResponse(successRespDetailsWithData, fakeEvent, fakeCallback)).resolves.toEqual({error: null});
+  return expect(sendResponse(successRespDetailsWithData, fakeEvent, fakeCallback))
+    .resolves.toEqual({error: null, data: successRespDetailsWithData.Data});
+});
+
+test("Gets a resolved Promise with null passed to callback when it is a proper success response with data", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetailsWithStrData, fakeEvent, fakeCallback))
+    .resolves.toEqual({error: null, data: {data: strData}});
 });
 
 /* Improper Success sendResponses */
