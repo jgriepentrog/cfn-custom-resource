@@ -5,8 +5,7 @@ env:
 extends: 'eslint:recommended'
 parserOptions:
   sourceType: module
-  ecmaFeatures:
-    experimentalObjectRestSpread: true
+  ecmaVersion: 2018
 rules:
 #Possible errors
   for-direction:
