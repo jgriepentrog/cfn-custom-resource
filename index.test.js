@@ -19,7 +19,7 @@ const fakeReqId = "c4dd7439";
 const fakeLogicalResourceId = "testResource";
 const fakePhysicalResourceId = "12345a";
 const fakeReason = "Something bad happened";
-const fakeRespURL = "https://google.com/resp/testing?testId=436";
+const fakeRespURL = "https://google.com/resp/testing?testId=436"; // NOTE: Endpoint valid, but URL not
 const badFakeRespURL = "notAURL";
 const notExistFakeRespURL = "https://thiswebsitedoesntexist1354htrbt3.com/nope?foo=bar";
 
@@ -62,25 +62,32 @@ failedRespDetails.Reason = fakeReason;
 /* Error setup */
 const noEventError = new Error("CRITICAL: no event, cannot send response");
 const noRespDetailsError = new Error("CRITICAL: no response details, cannot send response");
-const reasonContextError = `Details in CloudWatch Log Stream: ${fakeContext.logStreamName}`;
-const reasonDefaultError = "WARNING: Reason not properly provided for failure";
+const reasonContextErrorMsg = `Details in CloudWatch Log Stream: ${fakeContext.logStreamName}`;
+const reasonContextError = new Error(reasonContextErrorMsg);
+const reasonDefaultErrorMsg = "WARNING: Reason not properly provided for failure";
+const reasonDefaultError = new Error(reasonDefaultErrorMsg);
 
 /* TESTS */
 
 /* Pure Errors */
-test("Gets a rejected promise with a thrown error when callback is omitted", () => {
-  expect.assertions(1);
-  return expect(sendResponse(successRespDetails, fakeEvent, null)).rejects.toThrow();
-});
-
-test("Gets a resolved promise with a thrown error when event is omitted", () => {
+test("Gets a resolved Promise with a thrown error passed to callback when event is omitted", () => {
   expect.assertions(1);
   return expect(sendResponse(successRespDetails, null, fakeCallback)).resolves.toEqual({error: noEventError});
 });
 
-test("Gets a rejected promise with a thrown error when response details is omitted", () => {
+test("Gets a resolved Promise with a thrown error without callback when event is omitted", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetails, null)).resolves.toThrow(noEventError);
+});
+
+test("Gets a resolved Promise with a thrown error passed to callback when response details is omitted", () => {
   expect.assertions(1);
   return expect(sendResponse(null, fakeEvent, fakeCallback)).resolves.toEqual({error: noRespDetailsError});
+});
+
+test("Gets a resolved Promise with a thrown error without callback when response details is omitted", () => {
+  expect.assertions(1);
+  return expect(sendResponse(null, fakeEvent)).resolves.toThrow(noRespDetailsError);
 });
 
 /* Proper Success sendResponses */
@@ -89,16 +96,36 @@ test("Gets a resolved Promise with null passed to callback when it is a proper s
   return expect(sendResponse(successRespDetails, fakeEvent, fakeCallback)).resolves.toEqual({error: null});
 });
 
+test("Gets a resolved Promise returning null without callback when it is a proper success response", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetails, fakeEvent)).resolves.toEqual(null);
+});
+
 test("Gets a resolved Promise with null passed to callback when it is a proper success response with data", () => {
   expect.assertions(1);
   return expect(sendResponse(successRespDetailsWithData, fakeEvent, fakeCallback))
     .resolves.toEqual({error: null, data: successRespDetailsWithData.Data});
 });
 
-test("Gets a resolved Promise with null passed to callback when it is a proper success response with data", () => {
+test("Gets a resolved Promise returning data without callback when it is a proper success response with data", () => {
   expect.assertions(1);
-  return expect(sendResponse(successRespDetailsWithStrData, fakeEvent, fakeCallback))
-    .resolves.toEqual({error: null, data: {data: strData}});
+  return expect(sendResponse(successRespDetailsWithData, fakeEvent))
+    .resolves.toEqual(successRespDetailsWithData.Data);
+});
+
+test(
+  "Gets a resolved Promise with null and wrapped data passed to callback when it is a proper success response with nonobject data",
+  () => {
+    expect.assertions(1);
+    return expect(sendResponse(successRespDetailsWithStrData, fakeEvent, fakeCallback))
+      .resolves.toEqual({error: null, data: {data: strData}});
+  }
+);
+
+test("Gets a resolved Promise returning wrapped data without callback when it is a proper success response with nonobject data", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetailsWithStrData, fakeEvent))
+    .resolves.toEqual({data: strData});
 });
 
 /* Improper Success sendResponses */
@@ -107,15 +134,30 @@ test("Gets a resolved Promise with an error passed to callback when it is a prop
   return expect(sendResponse(successRespDetails, badFakeEvent, fakeCallback)).resolves.toThrow();
 });
 
+test("Gets a resolved Promise returning an error without callback when it is a proper success response, but a bad response URL", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetails, badFakeEvent)).resolves.toThrow();
+});
+
 test("Gets a resolved Promise with an error passed to callback on a proper success response, but not existent response URL", () => {
   expect.assertions(1);
   return expect(sendResponse(successRespDetails, notExistFakeEvent, fakeCallback)).resolves.toThrow();
+});
+
+test("Gets a resolved Promise returning an error without callback on a proper success response, but not existent response URL", () => {
+  expect.assertions(1);
+  return expect(sendResponse(successRespDetails, notExistFakeEvent)).resolves.toThrow();
 });
 
 /* Proper Failed sendResponses */
 test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
   expect.assertions(1);
   return expect(sendResponse(failedRespDetails, fakeEvent, fakeCallback)).resolves.toEqual({error: fakeReason});
+});
+
+test("Gets a resolved Promise returning an error without callback when it is a proper failed response", () => {
+  expect.assertions(1);
+  return expect(sendResponse(failedRespDetails, fakeEvent)).resolves.toThrow();
 });
 
 /* Proper sendSuccesses */
@@ -130,12 +172,40 @@ test("Gets a resolved Promise with reason passed to callback when it is a proper
   return expect(sendFailure(fakeReason, fakeEvent, fakeCallback, fakeContext)).resolves.toEqual({error: fakeReason});
 });
 
+test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
+  expect.assertions(1);
+  return expect(sendFailure(fakeReason, fakeEvent, null, fakeContext)).resolves.toThrow();
+});
+
+test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
+  expect.assertions(1);
+  return expect(sendFailure(fakeReason, fakeEvent, fakeCallback)).resolves.toEqual({error: fakeReason});
+});
+
+test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
+  expect.assertions(1);
+  return expect(sendFailure(fakeReason, fakeEvent)).resolves.toThrow();
+});
+
 test("Gets a resolved Promise with context default reason passed to callback when it is a proper failed response", () => {
   expect.assertions(1);
-  return expect(sendFailure(null, fakeEvent, fakeCallback, fakeContext)).resolves.toEqual({error: reasonContextError});
+  return expect(sendFailure(null, fakeEvent, fakeCallback, fakeContext)).resolves.toEqual({error: reasonContextErrorMsg});
 });
+
+test(
+  "Gets a resolved Promise with returning an error with context default reason without callback when it is a proper failed response",
+  () => {
+    expect.assertions(1);
+    return expect(sendFailure(null, fakeEvent, null, fakeContext)).resolves.toThrow(reasonContextError);
+  }
+);
 
 test("Gets a resolved Promise with default reason passed to callback when it is a proper failed response", () => {
   expect.assertions(1);
-  return expect(sendFailure(null, fakeEvent, fakeCallback)).resolves.toEqual({error: reasonDefaultError});
+  return expect(sendFailure(null, fakeEvent, fakeCallback)).resolves.toEqual({error: reasonDefaultErrorMsg});
+});
+
+test("Gets a resolved Promise returning an error with default reason without callback when it is a proper failed response", () => {
+  expect.assertions(1);
+  return expect(sendFailure(null, fakeEvent)).resolves.toThrow(reasonDefaultError);
 });

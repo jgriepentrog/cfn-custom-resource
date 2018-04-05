@@ -10,6 +10,28 @@ const SUCCESS = "SUCCESS";
 const FAILED = "FAILED";
 
 /**
+ * Mocks the callback function if one is not provided to directly return the value intended for the callback
+ * @param  {Error} error   Error encountered that should be returned. null if no error.
+ * @param  {*}     result  Optional. Value to return. Ignored if error is provided.
+ * @return {*}             Returns the Error, result value, or if neither applicable, null
+ */
+const mockCallback = (error, result) => {
+  if (error) {
+    if (error instanceof Error) {
+      return error;
+    }
+
+    return new Error(error);
+  }
+
+  if (result) {
+    return result;
+  }
+
+  return null;
+};
+
+/**
  * Sends a response to Cloudformation about the success or failure of a custom resource deploy
  * @param  {Object} responseDetails                     Contains the properties for the response
  * @param  {string} responseDetails.Status              Status for the response. SUCCESS or FAILED.
@@ -17,21 +39,30 @@ const FAILED = "FAILED";
  * @param  {string} responseDetails.PhysicalResourceId  Physical resource id
  * @param  {string} responseDetails.Data                Additional response to return. Optional.
  * @param  {Object} event                               Lambda event that contains passthrough information
- * @param  {Function} callback                          Lambda callback
- * @return {Promise}                                    Promise for sending the response
+ * @param  {Function} callback                          Optional. Lambda callback.
+ * @return {Promise}                                    Promise for sending the response.
+ *                                                      If the Lambda callback is provided,returns the provided callback with
+ *                                                      error/result parameters.
+ *                                                      If the Lambda callback is not provided, returns the error or result data directly.
+ *                                                      Errors are returned for FAILED responses as well as for any errors in the
+ *                                                      send response execution.
+ *                                                      If Data is provided, it is provided as the callback result or returned directly.
+ *                                                      Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendResponse = (responseDetails, event, callback) => {
+  const iCallback = callback ? callback : mockCallback;
+
   if (!event) {
     return Promise.reject(new Error("CRITICAL: no event, cannot send response"))
       .catch((err) => {
-        return callback(err);
+        return iCallback(err);
       });
   }
 
   if (!responseDetails) {
     return Promise.reject(new Error("CRITICAL: no response details, cannot send response"))
       .catch((err) => {
-        return callback(err);
+        return iCallback(err);
       });
   }
 
@@ -44,12 +75,12 @@ const sendResponse = (responseDetails, event, callback) => {
 
   const responseBody = {
     Status,
-    /* ...Reason ? {Reason} : {}, - reinstate once Node 8 is supported in Lambda */
+    /* ...Reason ? {Reason} : {}, - reinstate once Node 8 is more widespead on Lambda */
     PhysicalResourceId,
     StackId: event.StackId,
     RequestId: event.RequestId,
     LogicalResourceId: event.LogicalResourceId
-    /* ...Data ? {Data} : {}, - reinstate once Node 8 is supported in Lambda */
+    /* ...Data ? {Data} : {}, - reinstate once Node 8 is more widespead on Lambda */
   };
 
   if (Reason) {
@@ -60,7 +91,7 @@ const sendResponse = (responseDetails, event, callback) => {
     responseBody.Data = Data;
   }
 
-  const responseBodyStr = JSON.stringify(responseBody); // Put back inline once Node 8
+  const responseBodyStr = JSON.stringify(responseBody); // Put back inline once Lambda Node 8 more widespead
 
   let url;
 
@@ -69,7 +100,7 @@ const sendResponse = (responseDetails, event, callback) => {
   } catch (err) {
     return Promise.reject(err)
       .catch(() => {
-        return callback(err);
+        return iCallback(err);
       });
   }
 
@@ -101,17 +132,17 @@ const sendResponse = (responseDetails, event, callback) => {
   })
     .then(() => {
       if (Status === FAILED) {
-        return callback(Reason);
+        return iCallback(Reason);
       }
 
       if (Data) {
-        return callback(null, Data);
+        return iCallback(null, Data);
       }
 
-      return callback(null);
+      return iCallback(null);
     })
     .catch((err) => {
-      return callback(err);
+      return iCallback(err);
     });
 };
 
@@ -124,6 +155,11 @@ const sendResponse = (responseDetails, event, callback) => {
  * @param  {Object}   event               Lambda event
  * @param  {Function} callback            Lambda callback
  * @return {Promise}                      Promise for sending the response
+ *                                        If the Lambda callback is provided,returns the provided callback with error/result parameters.
+ *                                        If the Lambda callback is not provided, returns the error or result data directly.
+ *                                        Errors are returned for FAILED responses as well as for any errors in the send response execution.
+ *                                        If Data is provided, it is provided as the callback result or returned directly.
+ *                                        Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendSuccess = (physicalResourceId, data, event, callback) => {
   return sendResponse({Status: SUCCESS, Reason: "", physicalResourceId, data}, event, callback);
@@ -135,7 +171,12 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  * @param  {Object}   event     Lambda event
  * @param  {Function} callback  Lambda callback
  * @param  {Object}   context   Lambda context. Used for providing a useful default reason.
- * @return {Promise}             Promise for sending the resposne
+ * @return {Promise}            Promise for sending the responses
+ *                              If the Lambda callback is provided,returns the provided callback with error/result parameters.
+ *                              If the Lambda callback is not provided, returns the error or result data directly.
+ *                              Errors are returned for FAILED responses as well as for any errors in the send response execution.
+ *                              If Data is provided, it is provided as the callback result or returned directly.
+ *                              Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendFailure = (reason, event, callback, context) => {
   const defaultReason = context ?
