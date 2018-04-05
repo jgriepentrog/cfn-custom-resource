@@ -1,6 +1,7 @@
 /* Requires */
 const https = require("https");
-const {URL} = require("url") ? require("url") : require("url").URL;
+const url = require("url");
+const {URL} = url;
 
 /* Constants */
 const CREATE = "Create";
@@ -93,10 +94,10 @@ const sendResponse = (responseDetails, event, callback) => {
 
   const responseBodyStr = JSON.stringify(responseBody); // Put back inline once Lambda Node 8 more widespead
 
-  let url;
+  let respURL;
 
   try {
-    url = new URL(event.ResponseURL);
+    respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL);
   } catch (err) {
     return Promise.reject(err)
       .catch(() => {
@@ -104,7 +105,7 @@ const sendResponse = (responseDetails, event, callback) => {
       });
   }
 
-  const {hostname, pathname, protocol} = url;
+  const {hostname, pathname, protocol} = respURL;
 
   const options = {
     hostname,
