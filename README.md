@@ -1,7 +1,7 @@
 # Cloudformation Custom Resources Helper
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
-##Supported Runtimes
+## Supported Runtimes
 * Lambda NodeJS 8.10
 * Lambda NodeJS 6.10
 

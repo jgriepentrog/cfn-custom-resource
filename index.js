@@ -1,6 +1,6 @@
 /* Requires */
 const https = require("https");
-const {URL} = require("url");
+const {URL} = require("url") ? require("url") : require("url").URL;
 
 /* Constants */
 const CREATE = "Create";
