@@ -1,13 +1,26 @@
 {
   "name": "cfn-custom-resource",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Node.js module providing utility functions for AWS Cloudformation Custom Resources.",
+  "keywords": [
+    "aws",
+    "cloudformation",
+    "cfn",
+    "custom",
+    "custom resource",
+    "response"
+  ],
   "main": "index.js",
   "repository": "git@github.com:zippadd/cfn-custom-resource.git",
   "author": "ZipPadd",
+  "homepage": "https://github.com/zippadd/cfn-custom-resource",
+  "bugs": {
+    "url": "https://github.com/zippadd/cfn-custom-resource/issues"
+  },
   "license": "MIT",
   "private": false,
   "devDependencies": {
+    "codecov": "^3.0.0",
     "eslint": "^4.19.1",
     "jest": "^22.4.3",
     "jsdoc-to-markdown": "^4.0.1"
@@ -15,7 +28,7 @@
   "scripts": {
     "doc": "jsdoc2md index.js > TEMP.MD",
     "lint": "eslint . ",
-    "test": "jest --coverage",
+    "test": "jest --coverage && codecov",
     "validate": "yarn lint && yarn jest"
   }
 }
