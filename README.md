@@ -3,7 +3,7 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 
 [![Build Status](https://travis-ci.org/zippadd/cfn-custom-resource.svg?branch=master)](https://travis-ci.org/zippadd/cfn-custom-resource)
 [![codecov](https://codecov.io/gh/zippadd/cfn-custom-resource/branch/master/graph/badge.svg)](https://codecov.io/gh/zippadd/cfn-custom-resource)
-![dependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/status.svg)](https://david-dm.org/zippadd/cfn-custom-resource)
+[![dependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/status.svg)](https://david-dm.org/zippadd/cfn-custom-resource)
 [![devDependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/dev-status.svg)](https://david-dm.org/zippadd/cfn-custom-resource?type=dev)
 [![NSP Status](https://nodesecurity.io/orgs/zippadd/projects/2be330bc-260e-4e16-9128-896d9a5fb1b5/badge)](https://nodesecurity.io/orgs/zippadd/projects/2be330bc-260e-4e16-9128-896d9a5fb1b5)
 [![Inline docs](http://inch-ci.org/github/zippadd/cfn-custom-resource.svg?branch=master)](http://inch-ci.org/github/zippadd/cfn-custom-resource)
