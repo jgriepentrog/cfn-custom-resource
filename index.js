@@ -212,7 +212,7 @@ const sendResponse = (responseDetails, event, callback) => {
  *                                        Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendSuccess = (physicalResourceId, data, event, callback) => {
-  return sendResponse({Status: SUCCESS, Reason: "", physicalResourceId, data}, event, callback);
+  return sendResponse({Status: SUCCESS, Reason: "", PhysicalResourceId: physicalResourceId, data}, event, callback);
 };
 
 /**
