@@ -1,6 +1,6 @@
 {
   "name": "cfn-custom-resource",
-  "version": "2.1.6",
+  "version": "2.1.8",
   "description": "Node.js module providing utility functions for AWS Cloudformation Custom Resources.",
   "keywords": [
     "aws",
@@ -23,7 +23,8 @@
     "codecov": "^3.0.0",
     "eslint": "^4.19.1",
     "jest": "^22.4.3",
-    "jsdoc-to-markdown": "^4.0.1"
+    "jsdoc-to-markdown": "^4.0.1",
+    "mock-require": "^3.0.2"
   },
   "scripts": {
     "doc": "jsdoc2md index.js > TEMP.MD",
