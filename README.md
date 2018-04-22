@@ -15,31 +15,32 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 ## Usage
 ```javascript
 const cfnCR = require("cfn-custom-resource");
+const {configure, sendSuccess, sendFailure, sendResponse, LOG_VERBOSE, SUCCESS} = cfnCR;
 
 /* Increase the logging level */
-cfnCR.configure({logLevel: LOG_VERBOSE});
+configure({logLevel: LOG_VERBOSE});
 
 /**
   Do resource creation
                       **/
 
 /* Resource successfully created! - async/await */
-const result = await cfnCR.sendSuccess(id, {ImportantInfo: otherId}, event);
+const result = await sendSuccess(id, {ImportantInfo: otherId}, event);
 return result;
 
 /* Resource successfully created! - Promises */
-return cfnCR.sendSuccess(id, {ImportantInfo: otherId}, event, callback);
+return sendSuccess(id, {ImportantInfo: otherId}, event, callback);
 
 /* Resource encountered an error during creation - async/await */
-await cfnCR.sendFailure("mistakes were made", event); // Simple form
-await cfnCR.sendFailure("mistakes were made", event, null, null, id); //If there's a special resource id to pass
+await sendFailure("mistakes were made", event); // Simple form
+await sendFailure("mistakes were made", event, null, null, id); //If there's a special resource id to pass
 
 /* Resource encountered an error during creation - Promises */
-return cfnCR.sendFailure("mistakes were made", event, callback); // Simple form
-return cfnCR.sendFailure("mistakes were made", event, callback, null, id); //If there's a special resource id to pass
+return sendFailure("mistakes were made", event, callback); // Simple form
+return sendFailure("mistakes were made", event, callback, null, id); //If there's a special resource id to pass
 
 /* If you want full control */
-await cfnCR.sendResponse({Status: cfnCR.SUCCESS, PhysicalResourceId: id, Data: {ImportantInfo: otherId}}, event);
+await sendResponse({Status: SUCCESS, PhysicalResourceId: id, Data: {ImportantInfo: otherId}}, event);
 ```
 
 ## Constants
