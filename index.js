@@ -127,12 +127,12 @@ const sendResponse = (responseDetails, event, callback) => {
       });
   }
 
-  const {hostname, pathname, protocol} = respURL;
+  const {hostname, protocol, path, pathname, search} = respURL;
 
   const options = {
     hostname,
     protocol,
-    pathname,
+    path: path ? path : pathname + search,
     method: "PUT",
     headers: {
       "content-type": "",
@@ -140,16 +140,37 @@ const sendResponse = (responseDetails, event, callback) => {
     }
   };
 
+  if (opts.logLevel > 1) {
+    console.log(JSON.stringify(options));
+    console.log(responseBodyStr);
+  }
+
   return new Promise((resolve, reject) => {
-    const request = https.request(options, () => {
+    const request = https.request(options, (res) => {
+      console.log("Response sent.");
+
+      let body;
+
       if (opts.logLevel > 1) {
-        console.log(JSON.stringify(options));
-        console.log(responseBodyStr);
+        console.log(`STATUS: ${res.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+
+        res.setEncoding("utf8");
+        res.on("data", (chunk) => {
+          body += chunk;
+        });
+
+        res.on("end", () => {
+          console.log(`RESPONSE BODY: ${body}`);
+          resolve();
+        });
+      } else {
+        resolve();
       }
-      resolve();
     });
 
     request.on("error", (error) => {
+      //console.log(error);
       reject(error);
     });
 
@@ -157,7 +178,6 @@ const sendResponse = (responseDetails, event, callback) => {
     request.end();
   })
     .then(() => {
-      console.log("Response sent.");
       if (Status === FAILED) {
         return iCallback(Reason);
       }
@@ -195,11 +215,12 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
 /**
  * Sends a failed response to Cloudformation. Wraps sendResponse.
  * @param  {string}   reason    Reason for the failure. If not provided, a default is provided.
- * @param  {string}   physicalResourceId  Physical Resource Id of the resource. If not provided,
- *                              uses the one from the event. If none in the event, generates one.
  * @param  {Object}   event     Lambda event
  * @param  {Function} callback  Lambda callback
  * @param  {Object}   context   Lambda context. Used for providing a useful default reason.
+ * @param  {string}   physicalResourceId  Physical Resource Id of the resource. If not provided,
+ *                              uses the one from the event. If none in the event, generates one.
+ *                              Note: this is often not needed
  * @return {Promise}            Promise for sending the responses
  *                              If the Lambda callback is provided,returns the provided callback with error/result parameters.
  *                              If the Lambda callback is not provided, returns the error or result data directly.
@@ -207,7 +228,7 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  *                              If Data is provided, it is provided as the callback result or returned directly.
  *                              Otherwise, null will be provided as the callback result or returned directly.
  */
-const sendFailure = (reason, physicalResourceId, event, callback, context) => {
+const sendFailure = (reason, event, callback, context, physicalResourceId) => {
   const defaultReason = context ?
     `Details in CloudWatch Log Stream: ${context.logStreamName}` :
     "WARNING: Reason not properly provided for failure";
