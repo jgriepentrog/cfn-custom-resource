@@ -170,7 +170,7 @@ const sendResponse = (responseDetails, event, callback) => {
     });
 
     request.on("error", (error) => {
-      //console.log(error);
+      console.log(error);
       reject(error);
     });
 
