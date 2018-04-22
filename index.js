@@ -119,7 +119,6 @@ const sendResponse = (responseDetails, event, callback) => {
   let respURL;
 
   try {
-    if (!URL) { console.log("old url"); }
     respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL);
   } catch (err) {
     return Promise.reject(err)
