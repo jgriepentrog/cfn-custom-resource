@@ -187,28 +187,28 @@ describe("Proper sendSuccesses", () => {
 describe("Proper sendFailures", () => {
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, fakeCallback, fakeContext)).resolves
+    return expect(sendFailure(fakeReason, fakeEvent, fakeCallback, fakeContext, fakePhysicalResourceId)).resolves
       .toEqual({error: fakeReason});
   });
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, null, fakeContext)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakeEvent, null, fakeContext, fakePhysicalResourceId)).resolves.toThrow();
   });
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, fakeCallback)).resolves.toEqual({error: fakeReason});
+    return expect(sendFailure(fakeReason, fakeEvent, fakeCallback, fakePhysicalResourceId)).resolves.toEqual({error: fakeReason});
   });
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakeEvent, null, null, fakePhysicalResourceId)).resolves.toThrow();
   });
 
   test("Gets a resolved Promise with context default reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, fakeCallback, fakeContext)).resolves
+    return expect(sendFailure(null, fakeEvent, fakeCallback, fakeContext, fakePhysicalResourceId)).resolves
       .toEqual({error: reasonContextErrorMsg});
   });
 
@@ -216,25 +216,26 @@ describe("Proper sendFailures", () => {
     "Gets a resolved Promise with returning an error with context default reason without callback when it is a proper failed response",
     () => {
       expect.assertions(1);
-      return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, null, fakeContext)).resolves.toThrow(reasonContextError);
+      return expect(sendFailure(null, fakeEvent, null, fakeContext, fakePhysicalResourceId)).resolves.toThrow(reasonContextError);
     }
   );
 
   test("Gets a resolved Promise with default reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, fakeCallback)).resolves.toEqual({error: reasonDefaultErrorMsg});
+    return expect(sendFailure(null, fakeEvent, fakeCallback, null, fakePhysicalResourceId)).resolves
+      .toEqual({error: reasonDefaultErrorMsg});
   });
 
   test("Gets a resolved Promise returning an error with default reason without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent)).resolves.toThrow(reasonDefaultError);
+    return expect(sendFailure(null, fakeEvent, null, null, fakePhysicalResourceId)).resolves.toThrow(reasonDefaultError);
   });
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(2);
     configure({logLevel: 3});
     const logSpy = jest.spyOn(global.console, "log");
-    return sendFailure(fakeReason, null, fakeEvent, fakeCallback, fakeContext).then((result) => {
+    return sendFailure(fakeReason, fakeEvent, fakeCallback, fakeContext).then((result) => {
       expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceIdDefault);
       expect(result).toEqual({error: fakeReason});
       configure({logLevel: 1});
@@ -247,7 +248,7 @@ describe("Proper sendFailures", () => {
     expect.assertions(2);
     configure({logLevel: 3});
     const logSpy = jest.spyOn(global.console, "log");
-    return sendFailure(fakeReason, null, physIdFakeEvent, fakeCallback, fakeContext).then((result) => {
+    return sendFailure(fakeReason, physIdFakeEvent, fakeCallback, fakeContext).then((result) => {
       expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceId);
       expect(result).toEqual({error: fakeReason});
       configure({logLevel: 1});
@@ -255,39 +256,33 @@ describe("Proper sendFailures", () => {
       logSpy.mockRestore();
     });
   });
-
-  /*
-  test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
-    expect.assertions(1);
-    return expect(sendFailure(fakeReason, null, physIdFakeEvent, fakeCallback, fakeContext)).resolves
-      .toEqual({error: fakeReason});
-  });*/
 });
 
 describe("Test Logging", () => {
   test("Test normal logging", () => {
+    configure({logLevel: 1});
     const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
     const EXPECTED_LOG_COUNT = 1;
     return sendResponse(successRespDetails, fakeEvent, fakeCallback).then(() => {
       expect.assertions(1);
-      const result = expect(logSpy).toHaveBeenCalledTimes(EXPECTED_LOG_COUNT);
+      expect(logSpy).toHaveBeenCalledTimes(EXPECTED_LOG_COUNT);
       logSpy.mockReset();
       logSpy.mockRestore();
-      return result;
     });
   });
 
   test("Test verbose logging", () => {
-    const logSpy = jest.spyOn(global.console, "log");
-    const EXPECTED_LOG_COUNT = 5;
+    const EXPECTED_LOG_COUNT = 8;
     configure({logLevel: 2});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
     return sendResponse(successRespDetails, fakeEvent, fakeCallback).then(() => {
       expect.assertions(1);
-      const result = expect(logSpy).toHaveBeenCalledTimes(EXPECTED_LOG_COUNT);
+      expect(logSpy).toHaveBeenCalledTimes(EXPECTED_LOG_COUNT);
       logSpy.mockReset();
       logSpy.mockRestore();
       configure({logLevel: 1});
-      return result;
     });
   });
 });
