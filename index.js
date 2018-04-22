@@ -1,3 +1,15 @@
+/* Globals */
+const opts = {logLevel: 1};
+
+/**
+ * Configures the module with the given options
+ * @param  {Object} options Options to configure with
+ * @return {void}           Void return
+ */
+const configure = (options) => {
+  Object.assign(opts, options);
+};
+
 /* Requires */
 const https = require("https");
 const url = require("url");
@@ -51,6 +63,11 @@ const mockCallback = (error, result) => {
  *                                                      Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendResponse = (responseDetails, event, callback) => {
+  if (opts.logLevel > 1) {
+    console.log(responseDetails);
+    console.log(event);
+  }
+
   const iCallback = callback ? callback : mockCallback;
 
   if (!event) {
@@ -70,6 +87,11 @@ const sendResponse = (responseDetails, event, callback) => {
   /* Cloudformation requires an object, so wrap if it's not */
   if (responseDetails.Data && typeof responseDetails.Data !== "object") {
     responseDetails.Data = {data: responseDetails.Data};
+  }
+
+  /* Cloudformation requires this to be a string, so make sure it is */
+  if (responseDetails.Reason && typeof responseDetails.Reason !== "string") {
+    responseDetails.Reason = JSON.stringify(responseDetails.Reason);
   }
 
   const {Status, Reason, PhysicalResourceId, Data} = responseDetails;
@@ -97,6 +119,7 @@ const sendResponse = (responseDetails, event, callback) => {
   let respURL;
 
   try {
+    if (!URL) { console.log("old url"); }
     respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL);
   } catch (err) {
     return Promise.reject(err)
@@ -121,6 +144,10 @@ const sendResponse = (responseDetails, event, callback) => {
   return new Promise((resolve, reject) => {
     const request = https.request(options, () => {
       console.log("Response sent.");
+      if (opts.logLevel > 1) {
+        console.log(JSON.stringify(options));
+        console.log(responseBodyStr);
+      }
       resolve();
     });
 
@@ -196,6 +223,7 @@ module.exports = {
   DELETE,
   SUCCESS,
   FAILED,
+  configure,
   sendResponse,
   sendSuccess,
   sendFailure
