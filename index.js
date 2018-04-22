@@ -142,7 +142,6 @@ const sendResponse = (responseDetails, event, callback) => {
 
   return new Promise((resolve, reject) => {
     const request = https.request(options, () => {
-      console.log("Response sent.");
       if (opts.logLevel > 1) {
         console.log(JSON.stringify(options));
         console.log(responseBodyStr);
@@ -158,6 +157,7 @@ const sendResponse = (responseDetails, event, callback) => {
     request.end();
   })
     .then(() => {
+      console.log("Response sent.");
       if (Status === FAILED) {
         return iCallback(Reason);
       }
@@ -195,6 +195,8 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
 /**
  * Sends a failed response to Cloudformation. Wraps sendResponse.
  * @param  {string}   reason    Reason for the failure. If not provided, a default is provided.
+ * @param  {string}   physicalResourceId  Physical Resource Id of the resource. If not provided,
+ *                              uses the one from the event. If none in the event, generates one.
  * @param  {Object}   event     Lambda event
  * @param  {Function} callback  Lambda callback
  * @param  {Object}   context   Lambda context. Used for providing a useful default reason.
@@ -205,14 +207,24 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  *                              If Data is provided, it is provided as the callback result or returned directly.
  *                              Otherwise, null will be provided as the callback result or returned directly.
  */
-const sendFailure = (reason, event, callback, context) => {
+const sendFailure = (reason, physicalResourceId, event, callback, context) => {
   const defaultReason = context ?
     `Details in CloudWatch Log Stream: ${context.logStreamName}` :
     "WARNING: Reason not properly provided for failure";
 
   const finalReason = reason ? reason : defaultReason;
 
-  return sendResponse({Status: FAILED, Reason: finalReason}, event, callback);
+  const defaultPhysicalResourceId = event.PhysicalResourceId ?
+    event.PhysicalResourceId :
+    "NOIDPROVIDED";
+
+  const finalPhysicalResourceId = physicalResourceId ? physicalResourceId : defaultPhysicalResourceId;
+
+  if (opts.logLevel > 2) {
+    console.log(finalPhysicalResourceId);
+  }
+
+  return sendResponse({Status: FAILED, Reason: finalReason, PhysicalResourceId: finalPhysicalResourceId}, event, callback);
 };
 
 /* Exports */
