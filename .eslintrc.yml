@@ -98,7 +98,7 @@ rules:
     - warn
   no-magic-numbers:
     - warn
-    - ignore: [0, 1, -1]
+    - ignore: [0, 1, -1, 2]
       ignoreArrayIndexes: false
       enforceConst: true
       detectObjects: false
