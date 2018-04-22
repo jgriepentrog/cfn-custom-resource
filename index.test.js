@@ -1,5 +1,8 @@
 /* SETUP */
-const {configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED} = require("./index");
+const {
+  configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED,
+  LOG_NORMAL, LOG_VERBOSE, LOG_DEBUG
+} = require("./index");
 
 /* Callback setup */
 const fakeCallback = jest.fn((error, data) => {
@@ -233,12 +236,12 @@ describe("Proper sendFailures", () => {
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(2);
-    configure({logLevel: 3});
+    configure({logLevel: LOG_DEBUG});
     const logSpy = jest.spyOn(global.console, "log");
     return sendFailure(fakeReason, fakeEvent, fakeCallback, fakeContext).then((result) => {
       expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceIdDefault);
       expect(result).toEqual({error: fakeReason});
-      configure({logLevel: 1});
+      configure({logLevel: LOG_NORMAL});
       logSpy.mockReset();
       logSpy.mockRestore();
     });
@@ -246,12 +249,12 @@ describe("Proper sendFailures", () => {
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(2);
-    configure({logLevel: 3});
+    configure({logLevel: LOG_DEBUG});
     const logSpy = jest.spyOn(global.console, "log");
     return sendFailure(fakeReason, physIdFakeEvent, fakeCallback, fakeContext).then((result) => {
       expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceId);
       expect(result).toEqual({error: fakeReason});
-      configure({logLevel: 1});
+      configure({logLevel: LOG_NORMAL});
       logSpy.mockReset();
       logSpy.mockRestore();
     });
@@ -260,7 +263,7 @@ describe("Proper sendFailures", () => {
 
 describe("Test Logging", () => {
   test("Test normal logging", () => {
-    configure({logLevel: 1});
+    configure({logLevel: LOG_NORMAL});
     const logSpy = jest.spyOn(global.console, "log");
     logSpy.mockReset();
     const EXPECTED_LOG_COUNT = 1;
@@ -274,7 +277,7 @@ describe("Test Logging", () => {
 
   test("Test verbose logging", () => {
     const EXPECTED_LOG_COUNT = 8;
-    configure({logLevel: 2});
+    configure({logLevel: LOG_VERBOSE});
     const logSpy = jest.spyOn(global.console, "log");
     logSpy.mockReset();
     return sendResponse(successRespDetails, fakeEvent, fakeCallback).then(() => {
@@ -282,7 +285,7 @@ describe("Test Logging", () => {
       expect(logSpy).toHaveBeenCalledTimes(EXPECTED_LOG_COUNT);
       logSpy.mockReset();
       logSpy.mockRestore();
-      configure({logLevel: 1});
+      configure({logLevel: LOG_NORMAL});
     });
   });
 });

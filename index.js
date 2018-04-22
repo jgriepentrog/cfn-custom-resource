@@ -1,5 +1,15 @@
+/* Constants */
+const CREATE = "Create";
+const UPDATE = "Update";
+const DELETE = "Delete";
+const SUCCESS = "SUCCESS";
+const FAILED = "FAILED";
+const LOG_NORMAL = 1;
+const LOG_VERBOSE = 2;
+const LOG_DEBUG = 3;
+
 /* Globals */
-const opts = {logLevel: 1};
+const opts = {logLevel: LOG_NORMAL};
 
 /**
  * Configures the module with the given options
@@ -14,13 +24,6 @@ const configure = (options) => {
 const https = require("https");
 const url = require("url");
 const {URL} = url;
-
-/* Constants */
-const CREATE = "Create";
-const UPDATE = "Update";
-const DELETE = "Delete";
-const SUCCESS = "SUCCESS";
-const FAILED = "FAILED";
 
 /**
  * Mocks the callback function if one is not provided to directly return the value intended for the callback
@@ -63,7 +66,7 @@ const mockCallback = (error, result) => {
  *                                                      Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendResponse = (responseDetails, event, callback) => {
-  if (opts.logLevel > 1) {
+  if (opts.logLevel >= LOG_VERBOSE) {
     console.log(responseDetails);
     console.log(event);
   }
@@ -140,7 +143,7 @@ const sendResponse = (responseDetails, event, callback) => {
     }
   };
 
-  if (opts.logLevel > 1) {
+  if (opts.logLevel >= LOG_VERBOSE) {
     console.log(JSON.stringify(options));
     console.log(responseBodyStr);
   }
@@ -151,7 +154,7 @@ const sendResponse = (responseDetails, event, callback) => {
 
       let body;
 
-      if (opts.logLevel > 1) {
+      if (opts.logLevel >= LOG_VERBOSE) {
         console.log(`STATUS: ${res.statusCode}`);
         console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
 
@@ -241,7 +244,7 @@ const sendFailure = (reason, event, callback, context, physicalResourceId) => {
 
   const finalPhysicalResourceId = physicalResourceId ? physicalResourceId : defaultPhysicalResourceId;
 
-  if (opts.logLevel > 2) {
+  if (opts.logLevel >= LOG_DEBUG) {
     console.log(finalPhysicalResourceId);
   }
 
@@ -255,6 +258,9 @@ module.exports = {
   DELETE,
   SUCCESS,
   FAILED,
+  LOG_NORMAL,
+  LOG_VERBOSE,
+  LOG_DEBUG,
   configure,
   sendResponse,
   sendSuccess,

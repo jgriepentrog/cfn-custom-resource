@@ -16,6 +16,9 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 ```javascript
 const cfnCR = require("cfn-custom-resource");
 
+/* Increase the logging level */
+cfnCR.configure({logLevel: LOG_VERBOSE});
+
 /**
   Do resource creation
                       **/
@@ -42,6 +45,7 @@ await cfnCR.sendResponse({Status: cfnCR.SUCCESS, PhysicalResourceId: id, Data: {
 ## Constants
 * Responses - SUCCESS and FAILED
 * Request Types - CREATE, UPDATE, DELETE
+* Logging Levels - LOG_NORMAL, LOG_VERBOSE, LOG_DEBUG
 
 ## Functions
 <a name="configure"></a>
@@ -118,9 +122,4 @@ Sends a failed response to Cloudformation. Wraps sendResponse.
 | event | <code>Object</code> | Lambda event |
 | callback | <code>function</code> | Lambda callback |
 | context | <code>Object</code> | Lambda context. Used for providing a useful default reason. |
-| physicalResourceId | <code>string</code> | Physical Resource Id of the resource. If not provided,                              uses the one from the event. If none in the event, generates one.
-
-## Logging Levels
-* 1 - Basic
-* 2 - Verbose
-* 3 - Debug/Internal   
+| physicalResourceId | <code>string</code> | Physical Resource Id of the resource. If not provided,                              uses the one from the event. If none in the event, generates one.  
