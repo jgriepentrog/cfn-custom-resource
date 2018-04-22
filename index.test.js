@@ -1,7 +1,6 @@
 /* SETUP */
 const {configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED} = require("./index");
 
-
 /* Callback setup */
 const fakeCallback = jest.fn((error, data) => {
   if (data) {
@@ -19,6 +18,7 @@ const fakeStackId = "f3a936";
 const fakeReqId = "c4dd7439";
 const fakeLogicalResourceId = "testResource";
 const fakePhysicalResourceId = "12345a";
+const fakePhysicalResourceIdDefault = "NOIDPROVIDED";
 const fakeReason = "Something bad happened";
 const fakeReasonObj = {ohno: "Something bad happened"};
 const fakeRespURL = "https://google.com/resp/testing?testId=436"; // NOTE: Endpoint valid, but URL not
@@ -35,6 +35,9 @@ const fakeEvent = {
 
 const badFakeEvent = Object.assign({}, fakeEvent);
 badFakeEvent.ResponseURL = badFakeRespURL;
+
+const physIdFakeEvent = Object.assign({}, fakeEvent);
+physIdFakeEvent.PhysicalResourceId = fakePhysicalResourceId;
 
 const notExistFakeEvent = Object.assign({}, fakeEvent);
 notExistFakeEvent.ResponseURL = notExistFakeRespURL;
@@ -184,46 +187,81 @@ describe("Proper sendSuccesses", () => {
 describe("Proper sendFailures", () => {
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent, fakeCallback, fakeContext)).resolves.toEqual({error: fakeReason});
+    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, fakeCallback, fakeContext)).resolves
+      .toEqual({error: fakeReason});
   });
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent, null, fakeContext)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, null, fakeContext)).resolves.toThrow();
   });
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent, fakeCallback)).resolves.toEqual({error: fakeReason});
+    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent, fakeCallback)).resolves.toEqual({error: fakeReason});
   });
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakePhysicalResourceId, fakeEvent)).resolves.toThrow();
   });
 
   test("Gets a resolved Promise with context default reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakeEvent, fakeCallback, fakeContext)).resolves.toEqual({error: reasonContextErrorMsg});
+    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, fakeCallback, fakeContext)).resolves
+      .toEqual({error: reasonContextErrorMsg});
   });
 
   test(
     "Gets a resolved Promise with returning an error with context default reason without callback when it is a proper failed response",
     () => {
       expect.assertions(1);
-      return expect(sendFailure(null, fakeEvent, null, fakeContext)).resolves.toThrow(reasonContextError);
+      return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, null, fakeContext)).resolves.toThrow(reasonContextError);
     }
   );
 
   test("Gets a resolved Promise with default reason passed to callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakeEvent, fakeCallback)).resolves.toEqual({error: reasonDefaultErrorMsg});
+    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent, fakeCallback)).resolves.toEqual({error: reasonDefaultErrorMsg});
   });
 
   test("Gets a resolved Promise returning an error with default reason without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(null, fakeEvent)).resolves.toThrow(reasonDefaultError);
+    return expect(sendFailure(null, fakePhysicalResourceId, fakeEvent)).resolves.toThrow(reasonDefaultError);
   });
+
+  test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
+    expect.assertions(2);
+    configure({logLevel: 3});
+    const logSpy = jest.spyOn(global.console, "log");
+    return sendFailure(fakeReason, null, fakeEvent, fakeCallback, fakeContext).then((result) => {
+      expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceIdDefault);
+      expect(result).toEqual({error: fakeReason});
+      configure({logLevel: 1});
+      logSpy.mockReset();
+      logSpy.mockRestore();
+    });
+  });
+
+  test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
+    expect.assertions(2);
+    configure({logLevel: 3});
+    const logSpy = jest.spyOn(global.console, "log");
+    return sendFailure(fakeReason, null, physIdFakeEvent, fakeCallback, fakeContext).then((result) => {
+      expect(logSpy).toHaveBeenCalledWith(fakePhysicalResourceId);
+      expect(result).toEqual({error: fakeReason});
+      configure({logLevel: 1});
+      logSpy.mockReset();
+      logSpy.mockRestore();
+    });
+  });
+
+  /*
+  test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
+    expect.assertions(1);
+    return expect(sendFailure(fakeReason, null, physIdFakeEvent, fakeCallback, fakeContext)).resolves
+      .toEqual({error: fakeReason});
+  });*/
 });
 
 describe("Test Logging", () => {
