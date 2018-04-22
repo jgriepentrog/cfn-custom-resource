@@ -1,5 +1,4 @@
 /* SETUP */
-/* const mockReq = require("mock-require"); */
 const {configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED} = require("./index");
 
 
@@ -254,12 +253,3 @@ describe("Test Logging", () => {
     });
   });
 });
-
-/*
-describe("Test Node Version Fallback", () => {
-  test("Gets a resolved Promise with null passed to callback when it is a proper success response, when URL object not exist", () => {
-    configure({forceOldUrl: true});
-    expect.assertions(1);
-    return expect(sendResponse(successRespDetails, fakeEvent, fakeCallback)).resolves.toEqual({error: null});
-  });
-});*/
