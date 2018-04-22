@@ -12,9 +12,31 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 * Lambda NodeJS 8.10
 * Lambda NodeJS 6.10
 
-## How to Use
+## Usage
 ```javascript
 const cfnCR = require("cfn-custom-resource");
+
+/**
+  Do resource creation
+                      **/
+
+/* Resource successfully created! - async/await */
+const result = await cfnCR.sendSuccess(id, {ImportantInfo: otherId}, event);
+return result;
+
+/* Resource successfully created! - Promises */
+return cfnCR.sendSuccess(id, {ImportantInfo: otherId}, event, callback);
+
+/* Resource encountered an error during creation - async/await */
+await cfnCR.sendFailure("mistakes were made", event); // Simple form
+await cfnCR.sendFailure("mistakes were made", event, null, null, id); //If there's a special resource id to pass
+
+/* Resource encountered an error during creation - Promises */
+return cfnCR.sendFailure("mistakes were made", event, callback); // Simple form
+return cfnCR.sendFailure("mistakes were made", event, callback, null, id); //If there's a special resource id to pass
+
+/* If you want full control */
+await cfnCR.sendResponse({Status: cfnCR.SUCCESS, PhysicalResourceId: id, Data: {ImportantInfo: otherId}}, event);
 ```
 
 ## Constants
@@ -22,18 +44,30 @@ const cfnCR = require("cfn-custom-resource");
 * Request Types - CREATE, UPDATE, DELETE
 
 ## Functions
+<a name="configure"></a>
+
+### configure(options) ⇒ <code>void</code>
+Configures the module with the given options
+
+**Kind**: global function  
+**Returns**: <code>void</code> - Void return  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| options | <code>Object</code> | Options to configure with |
+
 ### sendResponse(responseDetails, event, callback) ⇒ <code>Promise</code>
 Sends a response to Cloudformation about the success or failure of a custom resource deploy
 
 **Kind**: global function  
 **Returns**: <code>Promise</code> - Promise for sending the response.
-                                     If the Lambda callback is provided,returns the provided callback with
-                                     error/result parameters.
-                                     If the Lambda callback is not provided, returns the error or result data directly.
-                                     Errors are returned for FAILED responses as well as for any errors in the
-                                     send response execution.
-                                     If Data is provided, it is provided as the callback result or returned directly.
-                                     Otherwise, null will be provided as the callback result or returned directly.  
+                                                     If the Lambda callback is provided,returns the provided callback with
+                                                     error/result parameters.
+                                                     If the Lambda callback is not provided, returns the error or result data directly.
+                                                     Errors are returned for FAILED responses as well as for any errors in the
+                                                     send response execution.
+                                                     If Data is provided, it is provided as the callback result or returned directly.
+                                                     Otherwise, null will be provided as the callback result or returned directly.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -52,11 +86,11 @@ Sends a success response to Cloudformation. Wraps sendResponse.
 
 **Kind**: global function  
 **Returns**: <code>Promise</code> - Promise for sending the response
-                                     If the Lambda callback is provided,returns the provided callback with error/result parameters.
-                                     If the Lambda callback is not provided, returns the error or result data directly.
-                                     Errors are returned for FAILED responses as well as for any errors in the send response execution.
-                                     If Data is provided, it is provided as the callback result or returned directly.
-                                     Otherwise, null will be provided as the callback result or returned directly.  
+                                       If the Lambda callback is provided,returns the provided callback with error/result parameters.
+                                       If the Lambda callback is not provided, returns the error or result data directly.
+                                       Errors are returned for FAILED responses as well as for any errors in the send response execution.
+                                       If Data is provided, it is provided as the callback result or returned directly.
+                                       Otherwise, null will be provided as the callback result or returned directly.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -67,16 +101,16 @@ Sends a success response to Cloudformation. Wraps sendResponse.
 
 <a name="sendFailure"></a>
 
-### sendFailure(reason, event, callback, context) ⇒ <code>Promise</code>
+### sendFailure(reason, event, callback, context, physicalResourceId) ⇒ <code>Promise</code>
 Sends a failed response to Cloudformation. Wraps sendResponse.
 
 **Kind**: global function  
 **Returns**: <code>Promise</code> - Promise for sending the responses
-                                     If the Lambda callback is provided,returns the provided callback with error/result parameters.
-                                     If the Lambda callback is not provided, returns the error or result data directly.
-                                     Errors are returned for FAILED responses as well as for any errors in the send response execution.
-                                     If Data is provided, it is provided as the callback result or returned directly.
-                                     Otherwise, null will be provided as the callback result or returned directly.  
+                             If the Lambda callback is provided,returns the provided callback with error/result parameters.
+                             If the Lambda callback is not provided, returns the error or result data directly.
+                             Errors are returned for FAILED responses as well as for any errors in the send response execution.
+                             If Data is provided, it is provided as the callback result or returned directly.
+                             Otherwise, null will be provided as the callback result or returned directly.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -84,3 +118,9 @@ Sends a failed response to Cloudformation. Wraps sendResponse.
 | event | <code>Object</code> | Lambda event |
 | callback | <code>function</code> | Lambda callback |
 | context | <code>Object</code> | Lambda context. Used for providing a useful default reason. |
+| physicalResourceId | <code>string</code> | Physical Resource Id of the resource. If not provided,                              uses the one from the event. If none in the event, generates one.
+
+## Logging Levels
+* 1 - Basic
+* 2 - Verbose
+* 3 - Debug/Internal   
