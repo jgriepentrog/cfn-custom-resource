@@ -185,6 +185,12 @@ describe("Proper sendSuccesses", () => {
     expect.assertions(1);
     return expect(sendSuccess(fakePhysicalResourceId, null, fakeEvent, fakeCallback)).resolves.toEqual({error: null});
   });
+
+  test("Gets a resolved Promise with null passed to callback when it is a proper success response with data", () => {
+    expect.assertions(1);
+    return expect(sendSuccess(fakePhysicalResourceId, successRespDetailsWithData.Data, fakeEvent, fakeCallback)).resolves
+      .toEqual({error: null, data: successRespDetailsWithData.Data});
+  });
 });
 
 describe("Proper sendFailures", () => {
