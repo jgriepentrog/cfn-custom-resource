@@ -20,7 +20,7 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "codecov": "^3.0.0",
+    "codecov": "^3.0.2",
     "eslint": "^4.19.1",
     "jest": "^22.4.3",
     "jsdoc-to-markdown": "^4.0.1"
