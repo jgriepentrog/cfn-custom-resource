@@ -1,4 +1,6 @@
 # Cloudformation Custom Resources Helper
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/zippadd/cfn-custom-resource.svg)](https://greenkeeper.io/)
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
 [![Build Status](https://travis-ci.org/zippadd/cfn-custom-resource.svg?branch=master)](https://travis-ci.org/zippadd/cfn-custom-resource)
