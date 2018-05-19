@@ -24,6 +24,7 @@ const fakePhysicalResourceId = "12345a";
 const fakePhysicalResourceIdDefault = "NOIDPROVIDED";
 const fakeReason = "Something bad happened";
 const fakeReasonObj = {ohno: "Something bad happened"};
+const fakeReasonError = new Error(fakeReason);
 const fakeRespURL = "https://google.com/resp/testing?testId=436"; // NOTE: Endpoint valid, but URL not
 const badFakeRespURL = "notAURL";
 const notExistFakeRespURL = "https://thiswebsitedoesntexist1354htrbt3.com/nope?foo=bar";
@@ -69,6 +70,9 @@ failedRespDetails.Reason = fakeReason;
 
 const failedRespDetailsObjReason = Object.assign({}, failedRespDetailsNoReason);
 failedRespDetailsObjReason.Reason = fakeReasonObj;
+
+const failedRespDetailsErrorReason = Object.assign({}, failedRespDetailsNoReason);
+failedRespDetailsErrorReason.Reason = fakeReasonError;
 
 /* Error setup */
 const noEventError = new Error("CRITICAL: no event, cannot send response");
@@ -174,6 +178,12 @@ describe("Proper Failed sendResponses", () => {
       .toEqual({error: JSON.stringify(fakeReasonObj)});
   });
 
+  test("Gets a resolved Promise with error reason passed to callback when it is a proper failed response", () => {
+    expect.assertions(1);
+    return expect(sendResponse(failedRespDetailsErrorReason, fakeEvent, fakeCallback)).resolves
+      .toEqual({error: JSON.stringify(fakeReasonError.stack)});
+  });
+
   test("Gets a resolved Promise returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
     return expect(sendResponse(failedRespDetails, fakeEvent)).resolves.toThrow();
@@ -202,7 +212,7 @@ describe("Proper sendFailures", () => {
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent, null, fakeContext, fakePhysicalResourceId)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakeEvent, null, fakeContext, fakePhysicalResourceId)).resolves.toThrow(fakeReasonError);
   });
 
   test("Gets a resolved Promise with reason passed to callback when it is a proper failed response", () => {
@@ -212,7 +222,7 @@ describe("Proper sendFailures", () => {
 
   test("Gets a resolved Promise with returning an error without callback when it is a proper failed response", () => {
     expect.assertions(1);
-    return expect(sendFailure(fakeReason, fakeEvent, null, null, fakePhysicalResourceId)).resolves.toThrow();
+    return expect(sendFailure(fakeReason, fakeEvent, null, null, fakePhysicalResourceId)).resolves.toThrow(fakeReasonError);
   });
 
   test("Gets a resolved Promise with context default reason passed to callback when it is a proper failed response", () => {
