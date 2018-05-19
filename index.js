@@ -94,6 +94,10 @@ const sendResponse = (responseDetails, event, callback) => {
 
   /* Cloudformation requires this to be a string, so make sure it is */
   if (responseDetails.Reason && typeof responseDetails.Reason !== "string") {
+    /* Stringifying an Error generates an empty object, so handle differently */
+    if (responseDetails.Reason instanceof Error) {
+      responseDetails.Reason = responseDetails.Reason.stack;
+    }
     responseDetails.Reason = JSON.stringify(responseDetails.Reason);
   }
 
