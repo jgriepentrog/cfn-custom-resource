@@ -102,14 +102,15 @@ const sendResponse = (responseDetails, event, callback) => {
   }
 
   const {Status, Reason, PhysicalResourceId, Data} = responseDetails;
+  const {StackId, RequestId, LogicalResourceId} = event;
 
   const responseBody = {
     Status,
     /* ...Reason ? {Reason} : {}, - reinstate once Node 8 is more widespead on Lambda */
     PhysicalResourceId,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId
+    StackId,
+    RequestId,
+    LogicalResourceId
     /* ...Data ? {Data} : {}, - reinstate once Node 8 is more widespead on Lambda */
   };
 
