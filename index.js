@@ -76,6 +76,7 @@ const sendResponse = (responseDetails, event, callback) => {
   if (!event) {
     return Promise.reject(new Error("CRITICAL: no event, cannot send response"))
       .catch((err) => {
+        console.log(err);
         return iCallback(err);
       });
   }
@@ -83,6 +84,7 @@ const sendResponse = (responseDetails, event, callback) => {
   if (!responseDetails) {
     return Promise.reject(new Error("CRITICAL: no response details, cannot send response"))
       .catch((err) => {
+        console.log(err);
         return iCallback(err);
       });
   }
