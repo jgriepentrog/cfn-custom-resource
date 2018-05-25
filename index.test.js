@@ -1,3 +1,7 @@
+/* Requires */
+const url = require("url");
+const {URL} = url;
+
 /* SETUP */
 const {
   configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED,
@@ -28,7 +32,6 @@ const fakeReasonError = new Error(fakeReason);
 const fakeRespURL = "https://google.com/resp/testing?testId=436"; // NOTE: Endpoint valid, but URL not
 const badFakeRespURL = "notAURL";
 const notExistFakeRespURL = "https://thiswebsitedoesntexist1354htrbt3.com/nope?foo=bar";
-
 
 const fakeEvent = {
   StackId: fakeStackId,
@@ -147,7 +150,7 @@ describe("Proper Success sendResponses", () => {
 describe("Improper Success sendResponses", () => {
   test("Gets a resolved Promise with an error passed to callback when it is a proper success response, but a bad response URL", () => {
     expect.assertions(1);
-    return expect(sendResponse(successRespDetails, badFakeEvent, fakeCallback)).resolves.toThrow();
+    return expect(sendResponse(successRespDetails, badFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.any(Object)});
   });
 
   test("Gets a resolved Promise returning an error without callback when it is a proper success response, but a bad response URL", () => {
@@ -157,7 +160,7 @@ describe("Improper Success sendResponses", () => {
 
   test("Gets a resolved Promise with an error passed to callback on a proper success response, but not existent response URL", () => {
     expect.assertions(1);
-    return expect(sendResponse(successRespDetails, notExistFakeEvent, fakeCallback)).resolves.toThrow();
+    return expect(sendResponse(successRespDetails, notExistFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.any(Object)});
   });
 
   test("Gets a resolved Promise returning an error without callback on a proper success response, but not existent response URL", () => {
