@@ -1,7 +1,3 @@
-/* Requires */
-const url = require("url");
-const {URL} = url;
-
 /* SETUP */
 const {
   configure, sendSuccess, sendFailure, sendResponse, SUCCESS, FAILED,
