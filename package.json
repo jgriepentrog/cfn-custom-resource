@@ -21,7 +21,7 @@
   "private": false,
   "devDependencies": {
     "codecov": "^3.0.2",
-    "eslint": "^4.19.1",
+    "eslint": "^5.0.0",
     "jest": "^23.0.0",
     "jsdoc-to-markdown": "^4.0.1"
   },
