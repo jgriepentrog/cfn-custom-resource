@@ -1,6 +1,6 @@
 {
   "name": "cfn-custom-resource",
-  "version": "4.0.7",
+  "version": "4.0.8",
   "description": "Node.js module providing utility functions for AWS Cloudformation Custom Resources.",
   "keywords": [
     "aws",
@@ -12,7 +12,7 @@
   ],
   "main": "index.js",
   "repository": "git@github.com:zippadd/cfn-custom-resource.git",
-  "author": "ZipPadd",
+  "author": "John Griepentrog",
   "homepage": "https://github.com/zippadd/cfn-custom-resource",
   "bugs": {
     "url": "https://github.com/zippadd/cfn-custom-resource/issues"
