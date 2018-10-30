@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Rewrite of commits to reflect individual contributors after migration to organization.
+- Updated this CHANGELOG
 
 ## [4.0.8] - 2018-10-27
 ### Added
