@@ -7,6 +7,9 @@ const FAILED = "FAILED";
 const LOG_NORMAL = 1;
 const LOG_VERBOSE = 2;
 const LOG_DEBUG = 3;
+const DEFAULT_PHYSICAL_RESOURCE_ID = "NOIDPROVIDED";
+const DEFAULT_REASON_WITH_CONTEXT = "Details in CloudWatch Log Stream: ";
+const DEFAULT_REASON = "WARNING: Reason not properly provided for failure";
 
 /* Globals */
 const opts = {logLevel: LOG_NORMAL};
@@ -240,14 +243,14 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  */
 const sendFailure = (reason, event, callback, context, physicalResourceId) => {
   const defaultReason = context ?
-    `Details in CloudWatch Log Stream: ${context.logStreamName}` :
-    "WARNING: Reason not properly provided for failure";
+    `${DEFAULT_REASON_WITH_CONTEXT}${context.logStreamName}` :
+    DEFAULT_REASON;
 
   const finalReason = reason ? reason : defaultReason;
 
   const defaultPhysicalResourceId = event.PhysicalResourceId ?
     event.PhysicalResourceId :
-    "NOIDPROVIDED";
+    DEFAULT_PHYSICAL_RESOURCE_ID;
 
   const finalPhysicalResourceId = physicalResourceId ? physicalResourceId : defaultPhysicalResourceId;
 
@@ -265,6 +268,9 @@ module.exports = {
   DELETE,
   SUCCESS,
   FAILED,
+  DEFAULT_PHYSICAL_RESOURCE_ID,
+  DEFAULT_REASON_WITH_CONTEXT,
+  DEFAULT_REASON,
   LOG_NORMAL,
   LOG_VERBOSE,
   LOG_DEBUG,

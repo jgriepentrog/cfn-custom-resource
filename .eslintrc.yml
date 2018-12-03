@@ -190,7 +190,7 @@ rules:
     - builtinGlobals: true
       hoist: functions
       allow:
-      - ""
+      - "URL"
   no-shadow-restricted-names:
     - error
   no-undef-init:
