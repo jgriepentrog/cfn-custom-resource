@@ -81,6 +81,23 @@ const reasonContextError = new Error(reasonContextErrorMsg);
 const reasonDefaultErrorMsg = "WARNING: Reason not properly provided for failure";
 const reasonDefaultError = new Error(reasonDefaultErrorMsg);
 
+/* Expect extends */
+expect.extend({
+  /**
+   * Determines if received object is an instance of objConstructor
+   * @param {object}    received        Received object
+   * @returns {boolean}                 True if instance of
+   */
+  toBeAnError(received) {
+    /* Duck type for now as instanceof doesn't work properly in Jest - https://github.com/facebook/jest/issues/2549 */
+    const result = received && received.message && received.stack && received.constructor.name.includes("Error");
+    return {
+      pass: result,
+      message: `Expected ${received} to ${result ? "" : "not "}be an Error`
+    };
+  }
+});
+
 /* TESTS */
 describe("Pure Errors", () => {
   test("Gets a resolved Promise with a thrown error passed to callback when event is omitted", () => {
@@ -146,7 +163,7 @@ describe("Proper Success sendResponses", () => {
 describe("Improper Success sendResponses", () => {
   test("Gets a resolved Promise with an error passed to callback when it is a proper success response, but a bad response URL", () => {
     expect.assertions(1);
-    return expect(sendResponse(successRespDetails, badFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.any(Object)});
+    return expect(sendResponse(successRespDetails, badFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.toBeAnError()});
   });
 
   test("Gets a resolved Promise returning an error without callback when it is a proper success response, but a bad response URL", () => {
@@ -156,7 +173,7 @@ describe("Improper Success sendResponses", () => {
 
   test("Gets a resolved Promise with an error passed to callback on a proper success response, but not existent response URL", () => {
     expect.assertions(1);
-    return expect(sendResponse(successRespDetails, notExistFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.any(Object)});
+    return expect(sendResponse(successRespDetails, notExistFakeEvent, fakeCallback)).resolves.toMatchObject({error: expect.toBeAnError()});
   });
 
   test("Gets a resolved Promise returning an error without callback on a proper success response, but not existent response URL", () => {
@@ -290,6 +307,58 @@ describe("Test Logging", () => {
     });
   });
 
+  test("Test normal logging - no event", () => {
+    configure({logLevel: LOG_NORMAL});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, null, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(noEventError.message);
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test normal logging - no responseDetails", () => {
+    configure({logLevel: LOG_NORMAL});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(null, fakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(noRespDetailsError.message);
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test normal logging - bad response URL", () => {
+    configure({logLevel: LOG_NORMAL});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, badFakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(expect.any(String));
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test normal logging - non existent response URL", () => {
+    configure({logLevel: LOG_NORMAL});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, notExistFakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(expect.any(String));
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
   test("Test verbose logging", () => {
     const EXPECTED_LOG_COUNT = 8;
     configure({logLevel: LOG_VERBOSE});
@@ -301,6 +370,58 @@ describe("Test Logging", () => {
       logSpy.mockReset();
       logSpy.mockRestore();
       configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test debug logging - no event", () => {
+    configure({logLevel: LOG_DEBUG});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, null, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(noEventError);
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test debug logging - no responseDetails", () => {
+    configure({logLevel: LOG_DEBUG});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(null, fakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(noRespDetailsError);
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_NORMAL});
+    });
+  });
+
+  test("Test debug logging - bad response URL", () => {
+    configure({logLevel: LOG_DEBUG});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, badFakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(expect.toBeAnError());
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_DEBUG});
+    });
+  });
+
+  test("Test debug logging - non existent response URL", () => {
+    configure({logLevel: LOG_DEBUG});
+    const logSpy = jest.spyOn(global.console, "log");
+    logSpy.mockReset();
+    return sendResponse(successRespDetails, notExistFakeEvent, fakeCallback).then(() => {
+      expect.assertions(1);
+      expect(logSpy).toHaveBeenCalledWith(expect.toBeAnError());
+      logSpy.mockReset();
+      logSpy.mockRestore();
+      configure({logLevel: LOG_DEBUG});
     });
   });
 });

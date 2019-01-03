@@ -79,7 +79,7 @@ const sendResponse = (responseDetails, event, callback) => {
   if (!event) {
     return Promise.reject(new Error("CRITICAL: no event, cannot send response"))
       .catch((err) => {
-        console.log(err);
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
         return iCallback(err);
       });
   }
@@ -87,7 +87,7 @@ const sendResponse = (responseDetails, event, callback) => {
   if (!responseDetails) {
     return Promise.reject(new Error("CRITICAL: no response details, cannot send response"))
       .catch((err) => {
-        console.log(err);
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
         return iCallback(err);
       });
   }
@@ -136,6 +136,8 @@ const sendResponse = (responseDetails, event, callback) => {
   } catch (err) {
     return Promise.reject(err)
       .catch(() => {
+        err.message = `CRITICAL: Error parsing URL due to: [${err.message}]`;
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
         return iCallback(err);
       });
   }
@@ -182,9 +184,8 @@ const sendResponse = (responseDetails, event, callback) => {
       }
     });
 
-    request.on("error", (error) => {
-      console.log(error);
-      reject(error);
+    request.on("error", (err) => {
+      reject(err);
     });
 
     request.write(responseBodyStr);
@@ -202,6 +203,8 @@ const sendResponse = (responseDetails, event, callback) => {
       return iCallback(null);
     })
     .catch((err) => {
+      err.message = `CRITICAL: Error sending response due to: [${err.message}]`;
+      console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
       return iCallback(err);
     });
 };
