@@ -2,7 +2,7 @@
 
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
-[![Build Status](https://travis-ci.org/zippadd/cfn-custom-resource.svg?branch=master)](https://travis-ci.org/zippadd/cfn-custom-resource)
+[![Build Status](https://travis-ci.com/zippadd/cfn-custom-resource.svg?branch=master)](https://travis-ci.com/zippadd/cfn-custom-resource)
 [![codecov](https://codecov.io/gh/zippadd/cfn-custom-resource/branch/master/graph/badge.svg)](https://codecov.io/gh/zippadd/cfn-custom-resource)
 [![dependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/status.svg)](https://david-dm.org/zippadd/cfn-custom-resource)
 [![devDependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/dev-status.svg)](https://david-dm.org/zippadd/cfn-custom-resource?type=dev)
