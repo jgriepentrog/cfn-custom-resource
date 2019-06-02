@@ -10,6 +10,7 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 [![Inline docs](http://inch-ci.org/github/zippadd/cfn-custom-resource.svg?branch=master)](http://inch-ci.org/github/zippadd/cfn-custom-resource)
 
 ## Supported Runtimes
+* Lambda NodeJS 10
 * Lambda NodeJS 8.10
 * Lambda NodeJS 6.10
 
