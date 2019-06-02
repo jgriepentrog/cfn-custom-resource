@@ -23,7 +23,7 @@
     "codecov": "^3.0.2",
     "eslint": "^5.0.0",
     "jest": "^24.0.0",
-    "jsdoc-to-markdown": "^4.0.1"
+    "jsdoc-to-markdown": "^5.0.0"
   },
   "scripts": {
     "doc": "jsdoc2md index.js > TEMP.MD",
