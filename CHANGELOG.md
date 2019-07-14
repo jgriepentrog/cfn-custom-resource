@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.14]
 ### Changed
 - Update dev dependencies/yarn.lock to resolve security issue
+- Only build on master branch and PRs
 
 ## [4.0.13]
 ### Changed

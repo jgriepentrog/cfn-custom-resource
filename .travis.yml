@@ -10,3 +10,6 @@ install:
   - npm install
 script:
   - npm test
+branches:
+  only:
+  - master
