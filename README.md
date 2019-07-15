@@ -127,3 +127,4 @@ Sends a failed response to Cloudformation. Wraps sendResponse.
 | callback | <code>function</code> | Lambda callback |
 | context | <code>Object</code> | Lambda context. Used for providing a useful default reason. |
 | physicalResourceId | <code>string</code> | Physical Resource Id of the resource. If not provided,                              uses the one from the event. If none in the event, generates one.  
+ 
