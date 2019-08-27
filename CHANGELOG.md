@@ -5,10 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [4.0.15]
+### Changed
+- Update dev dependencies/yarn.lock to resolve security issue
+
 ## [4.0.14]
 ### Changed
 - Update dev dependencies/yarn.lock to resolve security issue
-- Only build on master branch and PRs
+- Only Travis CI build on master branch and PRs
 
 ## [4.0.13]
 ### Changed
