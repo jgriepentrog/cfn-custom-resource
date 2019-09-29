@@ -29,6 +29,6 @@
     "doc": "jsdoc2md index.js > TEMP.MD",
     "lint": "eslint . ",
     "test": "jest --coverage && codecov",
-    "validate": "yarn lint && yarn jest"
+    "validate": "npm run lint && jest"
   }
 }
