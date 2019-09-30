@@ -1,18 +1,18 @@
 /* Constants */
-const CREATE = "Create";
-const UPDATE = "Update";
-const DELETE = "Delete";
-const SUCCESS = "SUCCESS";
-const FAILED = "FAILED";
-const LOG_NORMAL = 1;
-const LOG_VERBOSE = 2;
-const LOG_DEBUG = 3;
-const DEFAULT_PHYSICAL_RESOURCE_ID = "NOIDPROVIDED";
-const DEFAULT_REASON_WITH_CONTEXT = "Details in CloudWatch Log Stream: ";
-const DEFAULT_REASON = "WARNING: Reason not properly provided for failure";
+const CREATE = 'Create'
+const UPDATE = 'Update'
+const DELETE = 'Delete'
+const SUCCESS = 'SUCCESS'
+const FAILED = 'FAILED'
+const LOG_NORMAL = 1
+const LOG_VERBOSE = 2
+const LOG_DEBUG = 3
+const DEFAULT_PHYSICAL_RESOURCE_ID = 'NOIDPROVIDED'
+const DEFAULT_REASON_WITH_CONTEXT = 'Details in CloudWatch Log Stream: '
+const DEFAULT_REASON = 'WARNING: Reason not properly provided for failure'
 
 /* Globals */
-const opts = {logLevel: LOG_NORMAL};
+const opts = { logLevel: LOG_NORMAL }
 
 /**
  * Configures the module with the given options
@@ -20,13 +20,13 @@ const opts = {logLevel: LOG_NORMAL};
  * @return {void}           Void return
  */
 const configure = (options) => {
-  Object.assign(opts, options);
-};
+  Object.assign(opts, options)
+}
 
 /* Requires */
-const https = require("https");
-const url = require("url");
-const {URL} = url;
+const https = require('https')
+const url = require('url')
+const { URL } = url
 
 /**
  * Mocks the callback function if one is not provided to directly return the value intended for the callback
@@ -37,18 +37,18 @@ const {URL} = url;
 const mockCallback = (error, result) => {
   if (error) {
     if (error instanceof Error) {
-      return error;
+      return error
     }
 
-    return new Error(error);
+    return new Error(error)
   }
 
   if (result) {
-    return result;
+    return result
   }
 
-  return null;
-};
+  return null
+}
 
 /**
  * Sends a response to Cloudformation about the success or failure of a custom resource deploy
@@ -70,44 +70,44 @@ const mockCallback = (error, result) => {
  */
 const sendResponse = (responseDetails, event, callback) => {
   if (opts.logLevel >= LOG_VERBOSE) {
-    console.log(responseDetails);
-    console.log(event);
+    console.log(responseDetails)
+    console.log(event)
   }
 
-  const iCallback = callback ? callback : mockCallback;
+  const iCallback = callback || mockCallback
 
   if (!event) {
-    return Promise.reject(new Error("CRITICAL: no event, cannot send response"))
+    return Promise.reject(new Error('CRITICAL: no event, cannot send response'))
       .catch((err) => {
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
-        return iCallback(err);
-      });
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
+        return iCallback(err)
+      })
   }
 
   if (!responseDetails) {
-    return Promise.reject(new Error("CRITICAL: no response details, cannot send response"))
+    return Promise.reject(new Error('CRITICAL: no response details, cannot send response'))
       .catch((err) => {
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
-        return iCallback(err);
-      });
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
+        return iCallback(err)
+      })
   }
 
   /* Cloudformation requires an object, so wrap if it's not */
-  if (responseDetails.Data && typeof responseDetails.Data !== "object") {
-    responseDetails.Data = {data: responseDetails.Data};
+  if (responseDetails.Data && typeof responseDetails.Data !== 'object') {
+    responseDetails.Data = { data: responseDetails.Data }
   }
 
   /* Cloudformation requires this to be a string, so make sure it is */
-  if (responseDetails.Reason && typeof responseDetails.Reason !== "string") {
+  if (responseDetails.Reason && typeof responseDetails.Reason !== 'string') {
     /* Stringifying an Error generates an empty object, so handle differently */
     if (responseDetails.Reason instanceof Error) {
-      responseDetails.Reason = responseDetails.Reason.stack;
+      responseDetails.Reason = responseDetails.Reason.stack
     }
-    responseDetails.Reason = JSON.stringify(responseDetails.Reason);
+    responseDetails.Reason = JSON.stringify(responseDetails.Reason)
   }
 
-  const {Status, Reason, PhysicalResourceId, Data} = responseDetails;
-  const {StackId, RequestId, LogicalResourceId} = event;
+  const { Status, Reason, PhysicalResourceId, Data } = responseDetails
+  const { StackId, RequestId, LogicalResourceId } = event
 
   const responseBody = {
     Status,
@@ -117,97 +117,97 @@ const sendResponse = (responseDetails, event, callback) => {
     RequestId,
     LogicalResourceId
     /* ...Data ? {Data} : {}, - reinstate once Node 8 is more widespead on Lambda */
-  };
+  }
 
   if (Reason) {
-    responseBody.Reason = Reason;
+    responseBody.Reason = Reason
   }
 
   if (Data) {
-    responseBody.Data = Data;
+    responseBody.Data = Data
   }
 
-  const responseBodyStr = JSON.stringify(responseBody); // Put back inline once Lambda Node 8 more widespead
+  const responseBodyStr = JSON.stringify(responseBody) // Put back inline once Lambda Node 8 more widespead
 
-  let respURL;
+  let respURL
 
   try {
-    respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL);
+    respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL) // eslint-disable-line node/no-deprecated-api
   } catch (err) {
     return Promise.reject(err)
       .catch(() => {
-        err.message = `CRITICAL: Error parsing URL due to: [${err.message}]`;
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
-        return iCallback(err);
-      });
+        err.message = `CRITICAL: Error parsing URL due to: [${err.message}]`
+        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
+        return iCallback(err)
+      })
   }
 
-  const {hostname, protocol, path, pathname, search} = respURL;
+  const { hostname, protocol, path, pathname, search } = respURL
 
   const options = {
     hostname,
     protocol,
-    path: path ? path : pathname + search,
-    method: "PUT",
+    path: path || pathname + search,
+    method: 'PUT',
     headers: {
-      "content-type": "",
-      "content-length": responseBodyStr.length
+      'content-type': '',
+      'content-length': responseBodyStr.length
     }
-  };
+  }
 
   if (opts.logLevel >= LOG_VERBOSE) {
-    console.log(JSON.stringify(options));
-    console.log(responseBodyStr);
+    console.log(JSON.stringify(options))
+    console.log(responseBodyStr)
   }
 
   return new Promise((resolve, reject) => {
     const request = https.request(options, (res) => {
-      console.log("Response sent.");
+      console.log('Response sent.')
 
-      let body;
+      let body
 
       if (opts.logLevel >= LOG_VERBOSE) {
-        console.log(`STATUS: ${res.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+        console.log(`STATUS: ${res.statusCode}`)
+        console.log(`HEADERS: ${JSON.stringify(res.headers)}`)
 
-        res.setEncoding("utf8");
-        res.on("data", (chunk) => {
-          body += chunk;
-        });
+        res.setEncoding('utf8')
+        res.on('data', (chunk) => {
+          body += chunk
+        })
 
-        res.on("end", () => {
-          console.log(`RESPONSE BODY: ${body}`);
-          resolve();
-        });
+        res.on('end', () => {
+          console.log(`RESPONSE BODY: ${body}`)
+          resolve()
+        })
       } else {
-        resolve();
+        resolve()
       }
-    });
+    })
 
-    request.on("error", (err) => {
-      reject(err);
-    });
+    request.on('error', (err) => {
+      reject(err)
+    })
 
-    request.write(responseBodyStr);
-    request.end();
+    request.write(responseBodyStr)
+    request.end()
   })
     .then(() => {
       if (Status === FAILED) {
-        return iCallback(Reason);
+        return iCallback(Reason)
       }
 
       if (Data) {
-        return iCallback(null, Data);
+        return iCallback(null, Data)
       }
 
-      return iCallback(null);
+      return iCallback(null)
     })
     .catch((err) => {
-      err.message = `CRITICAL: Error sending response due to: [${err.message}]`;
-      console.log(opts.logLevel >= LOG_DEBUG ? err : err.message);
-      return iCallback(err);
-    });
-};
+      err.message = `CRITICAL: Error sending response due to: [${err.message}]`
+      console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
+      return iCallback(err)
+    })
+}
 
 /**
  * Sends a success response to Cloudformation. Wraps sendResponse.
@@ -225,8 +225,8 @@ const sendResponse = (responseDetails, event, callback) => {
  *                                        Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendSuccess = (physicalResourceId, data, event, callback) => {
-  return sendResponse({Status: SUCCESS, Reason: "", PhysicalResourceId: physicalResourceId, Data: data}, event, callback);
-};
+  return sendResponse({ Status: SUCCESS, Reason: '', PhysicalResourceId: physicalResourceId, Data: data }, event, callback)
+}
 
 /**
  * Sends a failed response to Cloudformation. Wraps sendResponse.
@@ -245,24 +245,24 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  *                              Otherwise, null will be provided as the callback result or returned directly.
  */
 const sendFailure = (reason, event, callback, context, physicalResourceId) => {
-  const defaultReason = context ?
-    `${DEFAULT_REASON_WITH_CONTEXT}${context.logStreamName}` :
-    DEFAULT_REASON;
+  const defaultReason = context
+    ? `${DEFAULT_REASON_WITH_CONTEXT}${context.logStreamName}`
+    : DEFAULT_REASON
 
-  const finalReason = reason ? reason : defaultReason;
+  const finalReason = reason || defaultReason
 
-  const defaultPhysicalResourceId = event.PhysicalResourceId ?
-    event.PhysicalResourceId :
-    DEFAULT_PHYSICAL_RESOURCE_ID;
+  const defaultPhysicalResourceId = event.PhysicalResourceId
+    ? event.PhysicalResourceId
+    : DEFAULT_PHYSICAL_RESOURCE_ID
 
-  const finalPhysicalResourceId = physicalResourceId ? physicalResourceId : defaultPhysicalResourceId;
+  const finalPhysicalResourceId = physicalResourceId || defaultPhysicalResourceId
 
   if (opts.logLevel >= LOG_DEBUG) {
-    console.log(finalPhysicalResourceId);
+    console.log(finalPhysicalResourceId)
   }
 
-  return sendResponse({Status: FAILED, Reason: finalReason, PhysicalResourceId: finalPhysicalResourceId}, event, callback);
-};
+  return sendResponse({ Status: FAILED, Reason: finalReason, PhysicalResourceId: finalPhysicalResourceId }, event, callback)
+}
 
 /* Exports */
 module.exports = {
@@ -281,4 +281,4 @@ module.exports = {
   sendResponse,
   sendSuccess,
   sendFailure
-};
+}
