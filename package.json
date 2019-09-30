@@ -21,14 +21,13 @@
   "private": false,
   "devDependencies": {
     "codecov": "^3.0.2",
-    "eslint": "^6.0.0",
     "jest": "^24.0.0",
-    "jsdoc-to-markdown": "^5.0.0"
+    "jsdoc-to-markdown": "^5.0.0",
+    "standard": "^14.3.1"
   },
   "scripts": {
     "doc": "jsdoc2md index.js > TEMP.MD",
-    "lint": "eslint . ",
-    "test": "jest --coverage && codecov",
-    "validate": "npm run lint && jest"
+    "lint": "standard",
+    "test": "standard && jest --coverage && codecov"
   }
 }
