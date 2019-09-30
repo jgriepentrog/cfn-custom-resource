@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.16]
+### Changed
+- Switch to NPM from Yarn
+- Switch to Nodejs Standard style
+
 ## [4.0.15]
 ### Changed
 - Update dev dependencies/yarn.lock to resolve security issue
