@@ -25,8 +25,7 @@ const configure = (options) => {
 
 /* Requires */
 const https = require('https')
-const url = require('url')
-const { URL } = url
+const { URL } = require('url')
 
 /**
  * Mocks the callback function if one is not provided to directly return the value intended for the callback
@@ -51,7 +50,7 @@ const mockCallback = (error, result) => {
 }
 
 /**
- * Sends a response to Cloudformation about the success or failure of a custom resource deploy
+ * Wraps the internal function to handle any callbacks
  * @param  {Object} responseDetails                     Contains the properties for the response
  * @param  {string} responseDetails.Status              Status for the response. SUCCESS or FAILED.
  * @param  {string} responseDetails.Reason              Reason for FAILED response. Ignored if SUCCESS.
@@ -68,7 +67,7 @@ const mockCallback = (error, result) => {
  *                                                      If Data is provided, it is provided as the callback result or returned directly.
  *                                                      Otherwise, null will be provided as the callback result or returned directly.
  */
-const sendResponse = (responseDetails, event, callback) => {
+const sendResponse = async (responseDetails, event, callback) => {
   if (opts.logLevel >= LOG_VERBOSE) {
     console.log(responseDetails)
     console.log(event)
@@ -76,20 +75,42 @@ const sendResponse = (responseDetails, event, callback) => {
 
   const iCallback = callback || mockCallback
 
+  let result
+
+  try {
+    result = await sendResponseInternal(responseDetails, event)
+  } catch (err) {
+    console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
+    return iCallback(err)
+  }
+
+  return iCallback(null, result)
+}
+
+/**
+ * Internal function to send the response to Cloudformation about the success or failure of a custom resource deploy
+ * @param  {Object} responseDetails                     Contains the properties for the response
+ * @param  {string} responseDetails.Status              Status for the response. SUCCESS or FAILED.
+ * @param  {string} responseDetails.Reason              Reason for FAILED response. Ignored if SUCCESS.
+ * @param  {string} responseDetails.PhysicalResourceId  Physical resource id
+ * @param  {string} responseDetails.Data                Additional response to return. Optional.
+ * @param  {Object} event                               Lambda event that contains passthrough information
+ * @return {Promise}                                    Promise for sending the response.
+ *                                                      If the Lambda callback is provided,returns the provided callback with
+ *                                                      error/result parameters.
+ *                                                      If the Lambda callback is not provided, returns the error or result data directly.
+ *                                                      Errors are returned for FAILED responses as well as for any errors in the
+ *                                                      send response execution.
+ *                                                      If Data is provided, it is provided as the callback result or returned directly.
+ *                                                      Otherwise, null will be provided as the callback result or returned directly.
+ */
+const sendResponseInternal = async (responseDetails, event) => {
   if (!event) {
-    return Promise.reject(new Error('CRITICAL: no event, cannot send response'))
-      .catch((err) => {
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
-        return iCallback(err)
-      })
+    throw new Error('CRITICAL: no event, cannot send response')
   }
 
   if (!responseDetails) {
-    return Promise.reject(new Error('CRITICAL: no response details, cannot send response'))
-      .catch((err) => {
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
-        return iCallback(err)
-      })
+    throw new Error('CRITICAL: no response details, cannot send response')
   }
 
   /* Cloudformation requires an object, so wrap if it's not */
@@ -109,37 +130,23 @@ const sendResponse = (responseDetails, event, callback) => {
   const { Status, Reason, PhysicalResourceId, Data } = responseDetails
   const { StackId, RequestId, LogicalResourceId } = event
 
-  const responseBody = {
+  const responseBodyStr = JSON.stringify({
     Status,
-    /* ...Reason ? {Reason} : {}, - reinstate once Node 8 is more widespead on Lambda */
+    ...Reason ? { Reason } : {}, // Only set if Reason is truthy
     PhysicalResourceId,
     StackId,
     RequestId,
-    LogicalResourceId
-    /* ...Data ? {Data} : {}, - reinstate once Node 8 is more widespead on Lambda */
-  }
-
-  if (Reason) {
-    responseBody.Reason = Reason
-  }
-
-  if (Data) {
-    responseBody.Data = Data
-  }
-
-  const responseBodyStr = JSON.stringify(responseBody) // Put back inline once Lambda Node 8 more widespead
+    LogicalResourceId,
+    ...Data ? { Data } : {} // Only set if Data is truthy
+  })
 
   let respURL
 
   try {
-    respURL = URL ? new URL(event.ResponseURL) : url.parse(event.ResponseURL) // eslint-disable-line node/no-deprecated-api
+    respURL = new URL(event.ResponseURL)
   } catch (err) {
-    return Promise.reject(err)
-      .catch(() => {
-        err.message = `CRITICAL: Error parsing URL due to: [${err.message}]`
-        console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
-        return iCallback(err)
-      })
+    err.message = `CRITICAL: Error parsing URL due to: [${err.message}]`
+    throw err
   }
 
   const { hostname, protocol, path, pathname, search } = respURL
@@ -193,19 +200,19 @@ const sendResponse = (responseDetails, event, callback) => {
   })
     .then(() => {
       if (Status === FAILED) {
-        return iCallback(Reason)
+        throw Reason
       }
 
       if (Data) {
-        return iCallback(null, Data)
+        return Data
       }
 
-      return iCallback(null)
+      return null
     })
     .catch((err) => {
       err.message = `CRITICAL: Error sending response due to: [${err.message}]`
       console.log(opts.logLevel >= LOG_DEBUG ? err : err.message)
-      return iCallback(err)
+      throw err
     })
 }
 
@@ -224,7 +231,7 @@ const sendResponse = (responseDetails, event, callback) => {
  *                                        If Data is provided, it is provided as the callback result or returned directly.
  *                                        Otherwise, null will be provided as the callback result or returned directly.
  */
-const sendSuccess = (physicalResourceId, data, event, callback) => {
+const sendSuccess = async (physicalResourceId, data, event, callback) => {
   return sendResponse({ Status: SUCCESS, Reason: '', PhysicalResourceId: physicalResourceId, Data: data }, event, callback)
 }
 
@@ -244,7 +251,7 @@ const sendSuccess = (physicalResourceId, data, event, callback) => {
  *                              If Data is provided, it is provided as the callback result or returned directly.
  *                              Otherwise, null will be provided as the callback result or returned directly.
  */
-const sendFailure = (reason, event, callback, context, physicalResourceId) => {
+const sendFailure = async (reason, event, callback, context, physicalResourceId) => {
   const defaultReason = context
     ? `${DEFAULT_REASON_WITH_CONTEXT}${context.logStreamName}`
     : DEFAULT_REASON

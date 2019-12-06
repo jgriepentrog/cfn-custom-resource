@@ -4,8 +4,6 @@ node_js:
   - "node"
   - "12"
   - "10"
-  - "8.10"
-  - "6.10"
 install:
   - npm install
 script:
