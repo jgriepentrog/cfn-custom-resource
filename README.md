@@ -13,7 +13,7 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 
 ## Supported Runtimes
 * NodeJS 10+
-
+ 
 ## Usage
 ```javascript
 const cfnCR = require('cfn-custom-resource');
