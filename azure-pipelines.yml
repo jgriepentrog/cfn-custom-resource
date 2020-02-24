@@ -8,7 +8,10 @@ stages:
   - job: NPMPublish
     container: 'zippadd/aws-serverless-node-docker:node12.13.0-r3'
     steps:
-    - script: npm publish
+    - script: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+      displayName: 'Create .npmrc'
+    - script: npm login && if [ $BUILD_SOURCE_BRANCH_NAME -eq "master" ]; then npm publish; else npm publish --dry-run; fi
       displayName: 'Publish package'
       env:
         NPM_TOKEN: $(npmToken)
+        BUILD_SOURCE_BRANCH_NAME: $(Build.SourceBranchName)
