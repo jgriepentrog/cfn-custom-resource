@@ -1,0 +1,14 @@
+trigger:
+  - master
+  pool:
+    vmImage: 'ubuntu-latest'
+  stages:
+  - stage: Publish
+    jobs:
+    - job: NPMPublish
+      container: 'zippadd/aws-serverless-node-docker:node12.13.0-r3'
+      steps:
+      - script: npm publish
+        displayName: 'Publish package'
+        env:
+          NPM_TOKEN: $(npmToken)
