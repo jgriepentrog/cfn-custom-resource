@@ -1,9 +1,9 @@
 language: node_js
 sudo: false
 node_js:
-  - "node"
-  - "12"
-  - "10"
+  - node
+  - '12'
+  - '10'
 install:
   - npm install
 script:
@@ -11,3 +11,12 @@ script:
 branches:
   only:
   - master
+deploy:
+  provider: npm
+  email: backend.services@zippadd.com
+  api_key:
+    secure: kCCHqKL8Tc5q5oqgj7cV18wGuFfguBCrLbH6ZPaGZtVC8xagXw7tKreLOU/jeVp2r3ph7XlQl3XDm3pMdHMz53o+GXeHx23Gk2yDARDDfq7MllAhaFrtdvKYG+WQ0t6UFoJ+T0NJGAmuq//Lwa62X+CABj+KNNtQmRizfQFgKz+INklyNUxV4YBSyO2rk8CIDmlOsXsRE+t7AG/lSsrNse+5ZImZ4XE0S0+YFGbl2uD8oNuO9dEagNeDpCtRKVy/fIqwEoxhasDuFe6XysmdM/Nsu0bNFPNMf0SgITML8uVcDYQdWBUf1AHbCcGmw/xYTiZHvGzeq8kAVyZXOWAKnEeTpHrCW6ajuZBrVkegjq3IoAMnZ+GgOW2YcGlLFHT+dkNq5YxaUIG7n8n+RvDjQ3yMKpDvkDqokIlfa8qycFzKKeT8vZjLhSFyKU2MHKzpD4xZ7a3NdEu7uxNu13yCdHcycuyH8rSUNdaU/FifBtnAVMcanKYftqfFtNIcEjF4C5NOzaXefLPwRkCvpvYqdi7OLOvcyyaXQadYpRmCe6+0X9D+fmdnAOVK0l/sYVqyEenpdFriunRdI7lZbXh1Qtl6rVNCk1Ng1opbaH1IjrNQXykmiFuqEiNknZoQfF693If7kqeFGaH6etJk+yRWTPl+aqWgHITZnqjpi2k61MI=
+  on:
+    tags: true
+    repo: zippadd/cfn-custom-resource
+    branch: master
