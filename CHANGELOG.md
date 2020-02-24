@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.3]
+### Added
+- Add version badge
+### Changed
+- Travis CI publish process
+
 ## [5.0.2]
 ### Changed
 - Update CodeCov specific version to resolve security issue
