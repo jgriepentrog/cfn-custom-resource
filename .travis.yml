@@ -1,13 +1,13 @@
 language: node_js
 os: linux
 node_js:
-  - node
-  - '12'
-  - '10'
+  - "node"
+  - "12"
+  - "10"
 jobs:
   include:
     - stage: test
-      if: (branch = master AND type = push) OR tag IS present
+      if: branch = master OR tag IS present
       install:
         - npm install
       script:
@@ -20,7 +20,7 @@ jobs:
         provider: npm
         email: backend.services@zippadd.com
         api_key:
-          secure: "fOErEfL2hRcxvpRVsTDwNF9pkxZ0+xdClWKlgHbfpM7Ynr073hVjlWAElEc++X7Ob27xL81EdN5S5v5aUVNdeEqoXnKROEASDXQwxHdg2HEkCbWoBi82kiMnd0FTTFOYWohIBKLSVnnTg3mQvW03L/7bQY1RHtLRKkQ2zuCSGjuYLBrmECywRIRDqRCiQY1I3UAav+rEGyXLPlFkhdIptH7jeB7AP0xZEMWFE/XyU2IZ5ae6GrnzZ8reB/J6Z0IzOh7p2p8HXojXqYaL0SMlGzavP6F9zu18QD4bUZTODYkk06BrgxHSDeUNNRBsfZ+5bYAbONih26CNRe3Ls/f2rvjvtTD++s0Hn2Y6frdBpglpUpR9ti1/5RXWAlBoW09WjNeq2Ucs2mkTHJkVgnp0NBPLJDAlJ1Jtk6X1Dhc9iV5Dwb8/xP+lnUN92dKlGaDYqsf3Vw+JfGjTsLh7zLkpc7V5wMDrwGZj5l8jYcys2YEdT7/xrXH+UOOqti/pF9geu+pyHJQfkEBxPYU99MMCIcV7ClxCmk0MHKk7WDDEUVFQh34gFPGDFJzDSeJV7pYdApChSERhZjRQ3QcwaHjIw/BJarc0eDdpPhqRZRUuGGZZv3z1YzgRkFD+M4o8dLX+GW1jWg9DE4DE4BlgDcuemqgv24IqKMrA5iGID9pGY0s="
+          secure: "ivxQGZpAnpr0X3Po9XgCPROujCCggelrawGCZPZEAIM3TzHq5ZEgAPRVOHBkuuM46XqmTLpjmCSn124SQXz5a6HEEJggPcazVsK3MF4BOZApWMKvKXg8CgzYo6zHhr1WvvK4/Gy62mwzDL2mIancu9oJ0h4HjaZDIQMPJFSFKU8MGV2HaKttpYDdTXoxIejxPLPF5UvwDUdhTe+RIlkTlONxY7b3XI2yyZknm4mNGXo1XGQDMNSSsDdnl3MeaPMxVB4jKu19SJWVSgbK2pxGg2Vd/kXTjPA/jJ0H9Fz8AdVx8eEicH728MaWOaXTB8/MFdMgQ/dAPGpS8Unqfe8MvLNodRevp6l5vmB/DPU6Spv9PJ2wmKMil39pt7zlOXiGzLyYhoE7kfnVPhwXRVEaTfn1TF4fgSpnuJFlhhpzzP3Aln47FgDeS4AvU/Nv9I+OYqqdsXoCjtN/rJzObjTTdwHZNQeqiNiCctdtpunEdXcjK3BYPNbvybP3j7USuP57kzveILcmmNIOHKUkX0M9OEq1GFEruh17edpxeanb/eek1KMg7aDGYzkCwa9ltD2vCa0k71XwgsXGFL08PgA02F/YdyiynCtWRHQR/jPvYYg5rEqvnmGt7OT8TS5vLD6Pys1v7pxocnpCCDzs/olPyYkUoVUSNLO9vbT8UtzPi6o="
         on:
           tags: true
           repo: zippadd/cfn-custom-resource
