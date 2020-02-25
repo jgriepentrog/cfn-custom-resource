@@ -7,7 +7,7 @@ node_js:
 jobs:
   include:
     - stage: test
-      if: branch = master OR tag IS present
+      if: (branch = master AND type = push) OR tag IS present
       install:
         - npm install
       script:
