@@ -13,6 +13,7 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 
 ## Supported Runtimes
 * NodeJS 10+
+&nbsp;
 
 ## Usage
 ```javascript
@@ -50,6 +51,7 @@ await sendResponse({ Status: SUCCESS, PhysicalResourceId: id, Data: { ImportantI
 * Request Types - CREATE, UPDATE, DELETE
 * Logging Levels - LOG_NORMAL, LOG_VERBOSE, LOG_DEBUG
 * Default sendFailure text - DEFAULT_PHYSICAL_RESOURCE_ID, DEFAULT_REASON_WITH_CONTEXT, DEFAULT_REASON (no context)
+&nbsp;
 
 ## Functions
 <a name="configure"></a>
