@@ -1,21 +1,27 @@
 language: node_js
-sudo: false
+os: linux
 node_js:
   - node
   - '12'
   - '10'
-install:
-  - npm install
-script:
-  - npm test
-branches:
-  only:
-  - master
-deploy:
-  provider: npm
-  email: backend.services@zippadd.com
-  api_key:
-    secure: kCCHqKL8Tc5q5oqgj7cV18wGuFfguBCrLbH6ZPaGZtVC8xagXw7tKreLOU/jeVp2r3ph7XlQl3XDm3pMdHMz53o+GXeHx23Gk2yDARDDfq7MllAhaFrtdvKYG+WQ0t6UFoJ+T0NJGAmuq//Lwa62X+CABj+KNNtQmRizfQFgKz+INklyNUxV4YBSyO2rk8CIDmlOsXsRE+t7AG/lSsrNse+5ZImZ4XE0S0+YFGbl2uD8oNuO9dEagNeDpCtRKVy/fIqwEoxhasDuFe6XysmdM/Nsu0bNFPNMf0SgITML8uVcDYQdWBUf1AHbCcGmw/xYTiZHvGzeq8kAVyZXOWAKnEeTpHrCW6ajuZBrVkegjq3IoAMnZ+GgOW2YcGlLFHT+dkNq5YxaUIG7n8n+RvDjQ3yMKpDvkDqokIlfa8qycFzKKeT8vZjLhSFyKU2MHKzpD4xZ7a3NdEu7uxNu13yCdHcycuyH8rSUNdaU/FifBtnAVMcanKYftqfFtNIcEjF4C5NOzaXefLPwRkCvpvYqdi7OLOvcyyaXQadYpRmCe6+0X9D+fmdnAOVK0l/sYVqyEenpdFriunRdI7lZbXh1Qtl6rVNCk1Ng1opbaH1IjrNQXykmiFuqEiNknZoQfF693If7kqeFGaH6etJk+yRWTPl+aqWgHITZnqjpi2k61MI=
-  on:
-    tags: true
-    repo: zippadd/cfn-custom-resource
+jobs:
+  include:
+    - stage: test
+      if: branch = master OR tag IS present
+      install:
+        - npm install
+      script:
+        - npm test
+    - stage: deploy
+      if: tag IS present
+      script: skip
+      deploy:
+        cleanup: true
+        provider: npm
+        email: backend.services@zippadd.com
+        api_key:
+          secure: "fOErEfL2hRcxvpRVsTDwNF9pkxZ0+xdClWKlgHbfpM7Ynr073hVjlWAElEc++X7Ob27xL81EdN5S5v5aUVNdeEqoXnKROEASDXQwxHdg2HEkCbWoBi82kiMnd0FTTFOYWohIBKLSVnnTg3mQvW03L/7bQY1RHtLRKkQ2zuCSGjuYLBrmECywRIRDqRCiQY1I3UAav+rEGyXLPlFkhdIptH7jeB7AP0xZEMWFE/XyU2IZ5ae6GrnzZ8reB/J6Z0IzOh7p2p8HXojXqYaL0SMlGzavP6F9zu18QD4bUZTODYkk06BrgxHSDeUNNRBsfZ+5bYAbONih26CNRe3Ls/f2rvjvtTD++s0Hn2Y6frdBpglpUpR9ti1/5RXWAlBoW09WjNeq2Ucs2mkTHJkVgnp0NBPLJDAlJ1Jtk6X1Dhc9iV5Dwb8/xP+lnUN92dKlGaDYqsf3Vw+JfGjTsLh7zLkpc7V5wMDrwGZj5l8jYcys2YEdT7/xrXH+UOOqti/pF9geu+pyHJQfkEBxPYU99MMCIcV7ClxCmk0MHKk7WDDEUVFQh34gFPGDFJzDSeJV7pYdApChSERhZjRQ3QcwaHjIw/BJarc0eDdpPhqRZRUuGGZZv3z1YzgRkFD+M4o8dLX+GW1jWg9DE4DE4BlgDcuemqgv24IqKMrA5iGID9pGY0s="
+        on:
+          tags: true
+          repo: zippadd/cfn-custom-resource
+          condition: $(git fetch origin master:master && git branch --contains $TRAVIS_TAG | grep '^[\*| ] master$')
