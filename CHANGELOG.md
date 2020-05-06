@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.7]
+### Changed
+- Update dependencies
+
+## [5.0.6]
+### Changed
+- Update dependencies
+
 ## [5.0.5]
 ### Changed
 - Extra spacing in the README
@@ -31,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.0.0]
 ### Changed
 - Update to async
-- Drop Node JS <10
+- BREAKING CHANGE: Drop Node JS <10
 
 ## [4.0.16]
 ### Changed
