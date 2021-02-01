@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.11]
+### Changed
+- Update dependencies
+- Add Node 14 to pipeline
+
 ## [5.0.10]
 ### Changed
 - Update dependencies

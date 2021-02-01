@@ -7,7 +7,6 @@ Node.js module providing utility functions and constants for AWS CloudFormation 
 [![codecov](https://codecov.io/gh/zippadd/cfn-custom-resource/branch/master/graph/badge.svg)](https://codecov.io/gh/zippadd/cfn-custom-resource)
 [![dependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/status.svg)](https://david-dm.org/zippadd/cfn-custom-resource)
 [![devDependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/dev-status.svg)](https://david-dm.org/zippadd/cfn-custom-resource?type=dev)
-[![Greenkeeper badge](https://badges.greenkeeper.io/zippadd/cfn-custom-resource.svg)](https://greenkeeper.io/)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Inline docs](http://inch-ci.org/github/zippadd/cfn-custom-resource.svg?branch=master)](http://inch-ci.org/github/zippadd/cfn-custom-resource)
 
