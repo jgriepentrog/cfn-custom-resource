@@ -20,8 +20,8 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "codecov": "^3.8.2",
-    "jest": "^27.0.3",
+    "codecov": "^3.8.3",
+    "jest": "^27.0.6",
     "jsdoc-to-markdown": "^7.0.1",
     "standard": "^16.0.3"
   },
