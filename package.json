@@ -1,6 +1,6 @@
 {
   "name": "cfn-custom-resource",
-  "version": "5.0.14",
+  "version": "5.0.15",
   "description": "Node.js module providing utility functions for AWS Cloudformation Custom Resources.",
   "keywords": [
     "aws",
@@ -20,14 +20,20 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "codecov": "^3.8.3",
-    "jest": "^27.0.6",
-    "jsdoc-to-markdown": "^7.0.1",
-    "standard": "^16.0.3"
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "jsdoc-to-markdown": "^7.1.1",
+    "lint-staged": "^12.3.7",
+    "standard": "^16.0.4"
+  },
+  "lint-staged": {
+    "*.js": "npm run lint:fix"
   },
   "scripts": {
     "doc": "jsdoc2md index.js > TEMP.MD",
     "lint": "standard",
-    "test": "standard && jest --coverage && codecov"
+    "lint:fix": "standard --fix",
+    "test": "jest",
+    "prepare": "husky install"
   }
 }

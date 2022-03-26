@@ -2,13 +2,9 @@
 
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
-![npm](https://img.shields.io/npm/v/cfn-custom-resource)
-[![Build Status](https://travis-ci.com/zippadd/cfn-custom-resource.svg?branch=master)](https://travis-ci.com/zippadd/cfn-custom-resource)
-[![codecov](https://codecov.io/gh/zippadd/cfn-custom-resource/branch/master/graph/badge.svg)](https://codecov.io/gh/zippadd/cfn-custom-resource)
-[![dependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/status.svg)](https://david-dm.org/zippadd/cfn-custom-resource)
-[![devDependencies Status](https://david-dm.org/zippadd/cfn-custom-resource/dev-status.svg)](https://david-dm.org/zippadd/cfn-custom-resource?type=dev)
+[![npm](https://img.shields.io/npm/v/cfn-custom-resource)](https://www.npmjs.com/package/cfn-custom-resource)
+![main](https://github.com/github/docs/actions/workflows/nodePkg.yml/badge.svg)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![Inline docs](http://inch-ci.org/github/zippadd/cfn-custom-resource.svg?branch=master)](http://inch-ci.org/github/zippadd/cfn-custom-resource)
 
 ## Supported Runtimes
 * NodeJS 10+
