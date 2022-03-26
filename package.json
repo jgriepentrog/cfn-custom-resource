@@ -11,11 +11,11 @@
     "response"
   ],
   "main": "index.js",
-  "repository": "git@github.com:zippadd/cfn-custom-resource.git",
+  "repository": "git@github.com:jgriepentrog/cfn-custom-resource.git",
   "author": "John Griepentrog",
-  "homepage": "https://github.com/zippadd/cfn-custom-resource",
+  "homepage": "https://github.com/jgriepentrog/cfn-custom-resource",
   "bugs": {
-    "url": "https://github.com/zippadd/cfn-custom-resource/issues"
+    "url": "https://github.com/jgriepentrog/cfn-custom-resource/issues"
   },
   "license": "MIT",
   "private": false,

@@ -3,7 +3,7 @@
 Node.js module providing utility functions and constants for AWS CloudFormation Custom Resources.
 
 [![npm](https://img.shields.io/npm/v/cfn-custom-resource)](https://www.npmjs.com/package/cfn-custom-resource)
-![main](https://github.com/github/docs/actions/workflows/nodePkg.yml/badge.svg)
+![main](https://github.com/jgriepentrog/cfn-custom-resource/actions/workflows/nodePkg.yml/badge.svg)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Supported Runtimes
