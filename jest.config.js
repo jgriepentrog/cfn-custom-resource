@@ -8,6 +8,6 @@ const config = {
       statements: 90
     }
   }
-};
+}
 
-module.exports = config;
+module.exports = config
